@@ -17,10 +17,27 @@
 */
 #include <iostream>
 
+#include "raycasting.hpp"
+#include "map.hpp"
+#include "tile.hpp"
+
 using namespace std;
 
 int main(int argc, char *argv[])
 {
     cout << "Hello World!" << endl;
+
+    Rayfun::Tile wall;
+    wall.isWall = true;
+    wall.clip.set(true);
+    wall.tag = "DD";
+    Rayfun::Map map({ 4, 4 });
+    map.setTileAt({ 0, 1}, wall);
+    map.setTileAt({ 1, 1}, wall);
+    map.setTileAt({ 2, 1}, wall);
+    map.setTileAt({ 3, 1}, wall);
+
+    auto result = Rayfun::Raycasting::castRay({ 3,0 }, { -0.7, 0.7 }, map);
+
     return 0;
 }

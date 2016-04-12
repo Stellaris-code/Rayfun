@@ -28,9 +28,9 @@ namespace Rayfun
 class Camera
 {
     public:
-        Camera(const sf::Vector2u& t_screenSize, const sf::Vector2d& t_plane,
+        Camera(const sf::Vector2s& t_screenSize, const sf::Vector2d& t_pos, const sf::Vector2d& t_plane,
                const sf::Vector2d& t_direction);
-        Camera(const sf::Vector2u& t_screenSize, double t_fov, double t_angle);
+        Camera(const sf::Vector2s& t_screenSize, const sf::Vector2d& t_pos, double t_fov, double t_angle);
 
     public:
         void setFOV(double t_fov);
@@ -39,7 +39,8 @@ class Camera
         void setPlane(const sf::Vector2d& t_plane);
         void setDirection(const sf::Vector2d& t_direction);
 
-        void setScreenSize(const sf::Vector2u& t_size);
+        void setPos(const sf::Vector2d& t_pos);
+        void setScreenSize(const sf::Vector2s& t_size);
 
 
         double fov() const;
@@ -48,12 +49,14 @@ class Camera
         sf::Vector2d plane() const;
         sf::Vector2d direction() const;
 
-        sf::Vector2u screenSize() const;
+        sf::Vector2d pos() const;
+        sf::Vector2s screenSize() const;
 
     private:
-        sf::Vector2u m_screenSize;
-        sf::Vector2d m_plane;
-        sf::Vector2d m_direction;
+        sf::Vector2d m_pos {};
+        sf::Vector2s m_screenSize {};
+        sf::Vector2d m_plane {};
+        sf::Vector2d m_direction {};
 };
 
 } // namespace Rayfun

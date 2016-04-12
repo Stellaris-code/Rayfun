@@ -25,16 +25,18 @@
 namespace Rayfun
 {
 
-Camera::Camera(const sf::Vector2u& t_screenSize, const sf::Vector2d &t_plane,
+Camera::Camera(const sf::Vector2s &t_screenSize, const sf::Vector2d& t_pos, const sf::Vector2d &t_plane,
                const sf::Vector2d &t_direction)
 {
+    setPos(t_pos);
     setScreenSize(t_screenSize);
     setPlane(t_plane);
     setDirection(t_direction);
 }
 
-Camera::Camera(const sf::Vector2u& t_screenSize, double t_fov, double t_angle)
+Camera::Camera(const sf::Vector2s& t_screenSize, const sf::Vector2d& t_pos, double t_fov, double t_angle)
 {
+    setPos(t_pos);
     setScreenSize(t_screenSize);
     setFOV(t_fov);
     setAngle(t_angle);
@@ -42,12 +44,12 @@ Camera::Camera(const sf::Vector2u& t_screenSize, double t_fov, double t_angle)
 
 void Camera::setFOV(double t_fov)
 {
-    m_plane = sf::Vector2d(0, tan(thor::toRadian(t_fov / 2.f)));
+    m_plane = sf::Vector2d(0, std::tan(thor::toRadian(t_fov / 2.f)));
 }
 
 void Camera::setAngle(double t_angle)
 {
-    m_direction = sf::Vector2d(cos(thor::toRadian(t_angle)), sin(thor::toRadian(t_angle)));
+    m_direction = sf::Vector2d(std::cos(thor::toRadian(t_angle)), std::sin(thor::toRadian(t_angle)));
 }
 
 void Camera::setPlane(const sf::Vector2d& t_plane)
@@ -60,19 +62,24 @@ void Camera::setDirection(const sf::Vector2d &t_direction)
     m_direction = t_direction;
 }
 
-void Camera::setScreenSize(const sf::Vector2u& t_size)
+void Camera::setPos(const sf::Vector2d& t_pos)
+{
+    m_pos = t_pos;
+}
+
+void Camera::setScreenSize(const sf::Vector2s& t_size)
 {
     m_screenSize = t_size;
 }
 
 double Camera::fov() const
 {
-    return 2 * thor::toDegree(atan(m_plane.y));
+    return 2 * thor::toDegree(std::atan(m_plane.y));
 }
 
 double Camera::angle() const
 {
-    return thor::toDegree(atan2(m_direction.y, m_direction.x));
+    return thor::toDegree(std::atan2(m_direction.y, m_direction.x));
 }
 
 sf::Vector2d Camera::plane() const
@@ -85,7 +92,12 @@ sf::Vector2d Camera::direction() const
     return m_direction;
 }
 
-sf::Vector2u Camera::screenSize() const
+sf::Vector2d Camera::pos() const
+{
+    return m_pos;
+}
+
+sf::Vector2s Camera::screenSize() const
 {
     return m_screenSize;
 }

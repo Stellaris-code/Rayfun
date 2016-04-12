@@ -18,11 +18,53 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+#include <map>
+
 #include <SFML/System/Vector2.hpp>
 
 namespace sf
 {
+
 using Vector2d = sf::Vector2<double>;
+using Vector2s = sf::Vector2<size_t>;
+
 }
+
+namespace Rayfun
+{
+
+enum class Side
+{
+    North,
+    South,
+    West,
+    East
+};
+
+template <typename T>
+class Directional
+{
+    public:
+        Directional() = default;
+
+        explicit Directional(T t_data)
+        { set(t_data); }
+
+        void set(const T& t_data)
+        {
+            m_sides[Side::North] = t_data;
+            m_sides[Side::South] = t_data;
+            m_sides[Side::East] = t_data;
+            m_sides[Side::West] = t_data;
+        }
+
+        T& operator[](Side side)       { return m_sides[side]; }
+        const T& operator[](Side side) const { return m_sides[side]; }
+
+    private:
+        std::map<Side, T> m_sides;
+};
+
+} // namespace Rayfun
 
 #endif // COMMON_HPP
