@@ -49,4 +49,30 @@ sf::Vector2s Map::size() const
     return sf::Vector2s(m_tiles.shape()[0], m_tiles.shape()[1]);
 }
 
+boost::optional<Sector&> Map::sectorAt(const sf::Vector2s& t_pos)
+{
+    for (auto& s : sectors)
+    {
+        if (s.rect.contains(t_pos))
+        {
+            return s;
+        }
+    }
+
+    return boost::none;
+}
+
+boost::optional<Sector> Map::sectorAt(const sf::Vector2s& t_pos) const
+{
+    for (const auto& s : sectors)
+    {
+        if (s.rect.contains(t_pos))
+        {
+            return s;
+        }
+    }
+
+    return boost::none;
+}
+
 } // namespace Rayfun

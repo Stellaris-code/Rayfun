@@ -20,13 +20,17 @@
 
 #include <cassert>
 
+#include <vector>
+
 #include <boost/multi_array.hpp>
+#include <boost/optional.hpp>
 
 #include <SFML/System/Vector2.hpp>
 
 #include "common.hpp"
 
 #include "tile.hpp"
+#include "sector.hpp"
 
 namespace Rayfun
 {
@@ -42,6 +46,12 @@ class Map
         Tile tileAt(const sf::Vector2s &t_pos) const;
 
         sf::Vector2s size() const;
+
+        boost::optional<Sector&> sectorAt(const sf::Vector2s &t_pos);
+        boost::optional<Sector> sectorAt(const sf::Vector2s &t_pos) const;
+
+    public:
+        std::vector<Sector> sectors {};
 
     private:
         boost::multi_array<Tile, 2> m_tiles {};

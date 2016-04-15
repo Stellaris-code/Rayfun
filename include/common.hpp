@@ -59,7 +59,7 @@ class Directional
         }
 
         T& operator[](Side side)       { return m_sides[side]; }
-        const T& operator[](Side side) const { return m_sides[side]; }
+        const T& operator[](Side side) const { return m_sides.at(side); }
 
     private:
         std::map<Side, T> m_sides;

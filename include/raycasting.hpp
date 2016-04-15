@@ -20,6 +20,8 @@
 
 #include <boost/optional.hpp>
 
+#include <SFML/Config.hpp>
+
 #include "common.hpp"
 
 #include "tile.hpp"
@@ -35,8 +37,10 @@ namespace Raycasting
 
 struct RaycastResult
 {
+        const Side side { Side::North };
         const boost::optional<Tile> tileHit {};
         const sf::Vector2d hitPos {};
+        const sf::Vector2i mapPos {};
         const double distance { 0 };
         const double perpDistance { 0 };
 };
@@ -49,6 +53,8 @@ enum class HitMode
 
 RaycastResult castRay(const sf::Vector2d& t_begin, const sf::Vector2d& t_dir, const Map& t_map,
                       HitMode t_hitmode = HitMode::Visibility);
+
+std::vector<sf::Uint8> render(const Camera& t_cam, const Map& t_map);
 
 }
 

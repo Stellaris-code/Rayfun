@@ -16,11 +16,11 @@
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
+#include "camera.hpp"
+
 #include <cmath>
 
 #include <Thor/Vectors/VectorAlgebra2D.hpp>
-
-#include "camera.hpp"
 
 namespace Rayfun
 {
@@ -49,6 +49,7 @@ void Camera::setFOV(double t_fov)
 
 void Camera::setAngle(double t_angle)
 {
+    thor::rotate(m_plane, t_angle - angle());
     m_direction = sf::Vector2d(std::cos(thor::toRadian(t_angle)), std::sin(thor::toRadian(t_angle)));
 }
 
@@ -59,6 +60,7 @@ void Camera::setPlane(const sf::Vector2d& t_plane)
 
 void Camera::setDirection(const sf::Vector2d &t_direction)
 {
+    thor::rotate(m_plane, thor::polarAngle(t_direction) - angle());
     m_direction = t_direction;
 }
 
