@@ -17,13 +17,15 @@
 */
 #include "state.hpp"
 
+#include "pakcontents.hpp"
+#include "parameters.hpp"
+
 namespace Rayfun
 {
 
-State::State(Context t_context)
+State::State(Context &t_context)
     : m_context(t_context)
 {
-
 }
 
 } // namespace Rayfun

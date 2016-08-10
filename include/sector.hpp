@@ -21,11 +21,17 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Image.hpp>
 
+#include "taggable.hpp"
+
 namespace Rayfun
 {
 
-struct Sector
+struct Sector : public Taggable
 {
+        Sector() = default;
+        Sector(sf::Rect<size_t> t_rect, sf::Image t_floor, sf::Image t_ceil)
+            : rect(t_rect), floor(t_floor), ceiling(t_ceil)
+        {}
         sf::Rect<size_t> rect;
         sf::Image floor;
         sf::Image ceiling;

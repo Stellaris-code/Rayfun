@@ -18,9 +18,8 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
-#include <map>
-
 #include <SFML/System/Vector2.hpp>
+#include <Thor/Resources/ResourceHolder.hpp>
 
 namespace sf
 {
@@ -28,6 +27,23 @@ namespace sf
 using Vector2d = sf::Vector2<double>;
 using Vector2s = sf::Vector2<size_t>;
 
+}
+
+
+namespace selbaward
+{
+class BitmapFont;
+}
+
+namespace sf
+{
+class RenderWindow;
+class Event;
+class Time;
+class Texture;
+class Image;
+class Font;
+class SoundBuffer;
 }
 
 namespace Rayfun
@@ -41,6 +57,15 @@ enum class Side
     East
 };
 
+struct Resources
+{
+        thor::ResourceHolder<sf::Texture, std::string>& textureHolder;
+        thor::ResourceHolder<sf::Image, std::string>& imageHolder;
+        thor::ResourceHolder<sf::Font, std::string>& fontHolder;
+        thor::ResourceHolder<selbaward::BitmapFont, std::string>& bitmapFontHolder;
+        thor::ResourceHolder<sf::SoundBuffer, std::string>& soundHolder;
+};
+
 template <typename T>
 class Directional
 {
@@ -52,18 +77,49 @@ class Directional
 
         void set(const T& t_data)
         {
-            m_sides[Side::North] = t_data;
-            m_sides[Side::South] = t_data;
-            m_sides[Side::East] = t_data;
-            m_sides[Side::West] = t_data;
+            m_north = t_data;
+            m_south = t_data;
+            m_east = t_data;
+            m_west = t_data;
         }
 
-        T& operator[](Side side)       { return m_sides[side]; }
-        const T& operator[](Side side) const { return m_sides.at(side); }
+        T& operator[](Side side)
+        {
+            switch (side)
+            {
+                case Side::North:
+                    return m_north;
+                case Side::South:
+                    return m_south;
+                case Side::East:
+                    return m_east;
+                case Side::West:
+                    return m_west;
+            }
+        }
+        const T& operator[](Side side) const
+        {
+            switch (side)
+            {
+                case Side::North:
+                    return m_north;
+                case Side::South:
+                    return m_south;
+                case Side::East:
+                    return m_east;
+                case Side::West:
+                    return m_west;
+            }
+        }
 
     private:
-        std::map<Side, T> m_sides;
+        T m_north;
+        T m_south;
+        T m_east;
+        T m_west;
 };
+
+
 
 } // namespace Rayfun
 

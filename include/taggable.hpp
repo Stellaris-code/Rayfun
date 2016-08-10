@@ -20,12 +20,14 @@
 
 #include <string>
 
+#include <boost/optional/optional.hpp>
+
 namespace Rayfun
 {
 
 struct Taggable
 {
-        std::string tag {};
+        boost::optional<std::string> tag {};
 };
 
 }

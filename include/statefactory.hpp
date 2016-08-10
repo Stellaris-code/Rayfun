@@ -22,19 +22,20 @@
 
 #include "stateid.hpp"
 #include "state.hpp"
+#include "gamestate.hpp"
 
 namespace Rayfun
 {
 
-inline std::unique_ptr<State> makeState(StateID t_stateID)
+inline std::unique_ptr<State> makeState(StateID t_stateID, State::Context& t_context)
 {
-//    switch (t_stateID)
-//    {
-//        case StateID::Menu:
-//            return std::make_unique<State>();
-//        case StateID::Game:
-//            return std::make_unique<State>();
-//    }
+    switch (t_stateID)
+    {
+        case StateID::Menu:
+            return std::unique_ptr<State>(std::make_unique<GameState>(t_context));
+        case StateID::Game:
+            return std::unique_ptr<State>(std::make_unique<GameState>(t_context));
+    }
 }
 
 } // namespace Rayfun

@@ -20,9 +20,9 @@
 
 #include <cassert>
 
+#include <memory>
 #include <vector>
 
-#include <boost/multi_array.hpp>
 #include <boost/optional.hpp>
 
 #include <SFML/System/Vector2.hpp>
@@ -30,31 +30,42 @@
 #include "common.hpp"
 
 #include "tile.hpp"
+#include "trigger.hpp"
 #include "sector.hpp"
+#include "drawableactor.hpp"
 
 namespace Rayfun
 {
 
-class Map
+class Map : sf::NonCopyable
 {
     public:
         explicit Map(const sf::Vector2s& t_size);
-        explicit Map(boost::const_multi_array_ref<Tile, 2> t_tiles);
 
     public:
         void setTileAt(const sf::Vector2s &t_pos, const Tile& t_tile);
-        Tile tileAt(const sf::Vector2s &t_pos) const;
+        const Tile &tileAt(const sf::Vector2s &t_pos) const;
+        Tile &tileAt(const sf::Vector2s &t_pos);
 
         sf::Vector2s size() const;
 
         boost::optional<Sector&> sectorAt(const sf::Vector2s &t_pos);
         boost::optional<Sector> sectorAt(const sf::Vector2s &t_pos) const;
 
+        void update(const sf::Time& t_deltaTime);
+
     public:
         std::vector<Sector> sectors {};
+        std::vector<Trigger> triggers {};
+        mutable std::vector<std::unique_ptr<DrawableActor>> sprites;
+        unsigned char ambientLight { 200 };
+
+        sf::Vector2d playerPos { 0, 0 };
 
     private:
-        boost::multi_array<Tile, 2> m_tiles {};
+        //boost::multi_array<Tile, 2> m_tiles {};
+        std::vector<Tile> m_tiles;
+        const sf::Vector2s m_size;
 };
 
 } // namespace Rayfun

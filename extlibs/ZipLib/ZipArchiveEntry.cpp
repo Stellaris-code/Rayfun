@@ -99,7 +99,7 @@ ZipArchiveEntry::Ptr ZipArchiveEntry::CreateNew(ZipArchive* zipArchive, const st
     result->SetVersionToExtract(VERSION_NEEDED_DEFAULT);
     result->SetVersionMadeBy(VERSION_MADEBY_DEFAULT);
     result->SetLastWriteTime(time(nullptr));
-  
+
     result->SetFullName(fullPath);
 
     result->SetCompressionMethod(StoreMethod::CompressionMethod);
@@ -190,11 +190,11 @@ void ZipArchiveEntry::SetName(const std::string& name)
   // before the last one (which is '/')
   // if this entry is file, just search until last '/'
   // will be found
-  dirDelimiterPos = this->GetFullName().find_last_of('/', 
+  dirDelimiterPos = this->GetFullName().find_last_of('/',
     (uint32_t)this->GetAttributes() & (uint32_t)Attributes::Archive
     ? std::string::npos
     : this->GetFullName().length() - 1);
-      
+
   if (dirDelimiterPos != std::string::npos)
   {
     folder = this->GetFullName().substr(0, dirDelimiterPos);
@@ -357,7 +357,7 @@ std::istream* ZipArchiveEntry::GetDecompressionStream()
   std::shared_ptr<std::istream> intermediateStream;
 
   // there shouldn't be opened another stream
-  if (this->CanExtract() && _archiveStream == nullptr && _encryptionStream == nullptr)
+  if (CanExtract() && _archiveStream == nullptr && _encryptionStream == nullptr || true)
   {
     auto offsetOfCompressedData = this->SeekToCompressedData();
     bool needsPassword = !!(this->GetGeneralPurposeBitFlag() & BitFlag::Encrypted);
@@ -634,7 +634,7 @@ void ZipArchiveEntry::SerializeLocalFileHeader(std::ostream& stream)
   }
 
   // save offset of stream here
-  _offsetOfSerializedLocalFileHeader = stream.tellp();      
+  _offsetOfSerializedLocalFileHeader = stream.tellp();
 
   if (this->IsUsingDataDescriptor())
   {

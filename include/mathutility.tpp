@@ -1,4 +1,4 @@
-/*  src/pakreader.cpp PakReader - Yann BOUCHER (yann) 15/04/2016
+/*  mathutility %{Cpp:License:ClassName} - Yann BOUCHER (yann) 16/05/2016
 **
 **
 **            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -15,14 +15,26 @@
 **
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
-#include "pakreader.hpp"
+#ifndef MATHUTILITY_TPP
+#define MATHUTILITY_TPP
+
+#include <cmath>
+
+#include <SFML/System/Vector2.hpp>
+#include <Thor/Vectors.hpp>
 
 namespace Rayfun
 {
-
-PakReader::PakReader()
+namespace Utility
 {
 
+template <typename T>
+inline sf::Vector2<T> angleToVector(T t_angle)
+{
+    return sf::Vector2<T>(std::cos(thor::toRadian(t_angle)), std::sin(thor::toRadian(t_angle)));
 }
 
 }
+}
+
+#endif // MATHUTILITY_TPP

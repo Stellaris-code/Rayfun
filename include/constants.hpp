@@ -21,6 +21,10 @@
 namespace Rayfun
 {
 
+constexpr auto c_bindingFile = "bindings.json";
+constexpr auto c_configFile = "config.json";
+
+constexpr auto c_maxSounds = 256;
 
 } // namespace Rayfun
 

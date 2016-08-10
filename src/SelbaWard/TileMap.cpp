@@ -252,7 +252,7 @@ void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
     }
 
     states.texture = &m_renderTexture.getTexture();
-    states.transform = getTransform();
+    states.transform *= getTransform();
 
     target.draw(&m_render.front(), 4, sf::PrimitiveType::Quads, states); // final render is always 4 vertices & quad
 }
@@ -361,7 +361,7 @@ unsigned int TileMap::priv_getTileAtGridPosition(const sf::Vector2i gridPosition
     return m_grid[gridPosition.y * m_gridSize.x + gridPosition.x];
 }
 
-inline sf::Vector2f TileMap::priv_getActualCamera() const
+sf::Vector2f TileMap::priv_getActualCamera() const
 {
     return m_camera - m_cameraTarget;
 }

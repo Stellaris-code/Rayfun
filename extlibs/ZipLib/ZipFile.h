@@ -21,7 +21,7 @@ class ZipFile
      *
      * \return The ZipArchive instance.
      */
-    static ZipArchive::Ptr Open(const std::string& zipPath);
+    static ZipArchive::Ptr Open(const std::string& zipPath, bool create_if_no = false);
 
     /**
      * \brief Saves the zip archive file with the given filename.
@@ -60,7 +60,7 @@ class ZipFile
      * \param level     (Optional) The level of compression. Use CompressionLevel::Stored for no compression.
      */
     static void AddFile(const std::string& zipPath, const std::string& fileName, ICompressionMethod::Ptr method = DeflateMethod::Create());
-    
+
     /**
      * \brief Adds a file to the zip archive.
      *

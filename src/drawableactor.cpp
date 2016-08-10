@@ -1,4 +1,4 @@
-/*  include/pakreader.hpp PakReader - Yann BOUCHER (yann) 15/04/2016
+/*  src/drawableactor.cpp DrawableActor - Yann BOUCHER (yann) 13/06/2016
 **
 **
 **            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -15,14 +15,20 @@
 **
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
-#ifndef PAKREADER_HPP
-#define PAKREADER_HPP
+#include "drawableactor.hpp"
 
+#include <cmath>
 
-class PakReader
+#include <Thor/Math/Trigonometry.hpp>
+
+#include "mathutility.hpp"
+
+namespace Rayfun
 {
-    public:
-        PakReader();
-};
 
-#endif // PAKREADER_HPP
+double DrawableActor::playerFacingAngle() const
+{
+    return Utility::normalizeAngle(thor::toDegree(std::atan2(playerPos.y - pos.y, playerPos.x - pos.x)) + angle + 180);
+}
+
+}

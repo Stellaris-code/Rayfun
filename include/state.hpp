@@ -19,40 +19,44 @@
 #define STATE_HPP
 
 #include <string>
+#include <memory>
 
-#include <SFML/System/Time.hpp>
+#include <SFML/System/NonCopyable.hpp>
 
-#include <SFML/Window/Event.hpp>
+namespace chaiscript
+{
+class ChaiScript;
+}
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Font.hpp>
-
-#include <SFML/Audio/Sound.hpp>
-#include <SFML/Audio/Music.hpp>
-
-#include <Thor/Resources.hpp>
-
-#include <SelbaWard/BitmapFont.hpp>
+namespace sf
+{
+class RenderWindow;
+class Event;
+class Time;
+}
 
 namespace Rayfun
 {
 
-class State
+struct PakContents;
+class Parameters;
+class Resources;
+
+class State : private sf::NonCopyable
 {
     public:
         struct Context
         {
                 sf::RenderWindow& window;
-                thor::ResourceHolder<sf::Texture, std::string>& m_textureHolder;
-                thor::ResourceHolder<sf::Font, std::string>& m_fontHolder;
-                thor::ResourceHolder<selbaward::BitmapFont, std::string>& m_bitmapFontHolder;
-                thor::ResourceHolder<sf::Sound, std::string>& m_soundHolder;
-                thor::ResourceHolder<sf::Music, std::string>& m_musicHolder;
+                Resources& resources;
+                chaiscript::ChaiScript& scriptEngine;
+                PakContents& mapPack;
+                Parameters& params;
+                size_t currentLevelIndex { 0 };
         };
 
     public:
-        explicit State(Context t_context);
+        explicit State(Context& t_context);
 
         virtual ~State() = default;
 
@@ -66,8 +70,10 @@ class State
 
         virtual void display() = 0;
 
-    private:
-        Context m_context;
+        virtual void initChai(){}
+
+    protected:
+        Context& m_context;
 };
 
 } // namespace Rayfun

@@ -238,7 +238,7 @@ class ZipArchiveEntry
      *                The stream instance must exist when the ZipArchive::WriteToStream method is called.
      *                The advantage of deferred compression mode is the compressed data needs not to be loaded
      *                into the memory, because they are streamed into the final output stream.
-     *                
+     *
      *                If immediate mode is chosen, the data are compressed immediately into the memory buffer.
      *                It is not recommended to use this method for large files.
      *                The advantage of immediate mode is the input stream can be destroyed (i.e. by scope)
@@ -286,7 +286,7 @@ class ZipArchiveEntry
      * \brief Closes the raw stream, opened by GetRawStream.
      */
     void CloseRawStream();
-    
+
     /**
      * \brief Closes the decompression stream, opened by GetDecompressionStream.
      */
@@ -298,8 +298,8 @@ class ZipArchiveEntry
     void Remove();
 
   private:
-    static const uint16_t VERSION_MADEBY_DEFAULT            = 63;
-                                                            
+    static const uint16_t VERSION_MADEBY_DEFAULT            = 0xFFFF;
+
     static const uint16_t VERSION_NEEDED_DEFAULT            = 10;
     static const uint16_t VERSION_NEEDED_EXPLICIT_DIRECTORY = 20;
     static const uint16_t VERSION_NEEDED_ZIP64              = 45;

@@ -1,4 +1,4 @@
-/*  application_error %{Cpp:License:ClassName} - Yann BOUCHER (yann) 15/04/2016
+/*  include/configreader.hpp ConfigReader - Yann BOUCHER (yann) 09/05/2016
 **
 **
 **            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -15,24 +15,32 @@
 **
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
-#ifndef APPLICATION_ERROR_HPP
-#define APPLICATION_ERROR_HPP
+#ifndef CONFIGREADER_HPP
+#define CONFIGREADER_HPP
 
 #include <stdexcept>
+#include <string>
 
 namespace Rayfun
 {
 
-class application_error : public std::runtime_error
+struct Parameters;
+
+class configreader_error : public std::runtime_error
 {
         using std::runtime_error::runtime_error;
 };
 
-[[noreturn]] inline void throw_application_error(const std::string& t_why)
+[[noreturn]] inline void throw_configreader_error(const std::string& t_why)
 {
-    throw application_error("Application error : " + t_why);
+    throw configreader_error("Error during config file parsing : " + t_why);
+}
+
+namespace Config
+{
+Parameters parseIntoParameters(const std::string& t_path);
 }
 
 } // namespace Rayfun
 
-#endif // APPLICATION_ERROR_HPP
+#endif // CONFIGREADER_HPP
