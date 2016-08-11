@@ -20,7 +20,7 @@
 
 int main(int argc, char *argv[])
 {
-    Rayfun::Application app(sf::VideoMode(800, 600), "Hey", "testPack.zip", sf::ContextSettings(0, 0, 4), 60);
+    Rayfun::Application app(sf::VideoMode(1000, 720), "Hey", "testPack.zip", sf::ContextSettings(0, 0, 4), 60);
     app.run();
 
     return 0;

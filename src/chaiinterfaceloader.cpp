@@ -29,6 +29,8 @@
 #include <chaiscript/utility/utility.hpp>
 #include <chaiscript/extras/math.hpp>
 
+#include <imgui/ImGui__ChaiScript.hpp>
+
 #include "gameplayglobals.hpp"
 #include "mathutility.hpp"
 
@@ -43,6 +45,9 @@ namespace Rayfun
 
 void loadChaiInterfaces(chaiscript::ChaiScript& t_chai, const Resources& t_res)
 {
+    auto imgui_chai = ImGui_GetChaiScriptModule();
+    t_chai.add(imgui_chai);
+
     chaiscript::ModulePtr m = chaiscript::ModulePtr(new chaiscript::Module());
     chaiscript::extras::math::bootstrap(m);
 

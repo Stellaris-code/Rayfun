@@ -39,11 +39,15 @@
 
 #include <SelbaWard/BitmapFont.hpp>
 
+#include <imgui/imgui.h>
+
+#include "common.hpp"
+
 #include "state.hpp"
-#include "statefactory.hpp"
+#include "statemachine.hpp"
 #include "parameters.hpp"
 #include "pakcontents.hpp"
-#include "common.hpp"
+#include "imgui-wrapper.hpp"
 
 namespace Rayfun
 {
@@ -68,10 +72,6 @@ class Application : private sf::NonCopyable
                     unsigned t_fpsCap = 60);
 
     public:
-        void changeState(StateID t_state);
-        void pushState(StateID t_state);
-        void popState();
-
         void run();
 
     private:
@@ -103,12 +103,14 @@ class Application : private sf::NonCopyable
     private:
         sf::RenderWindow m_window {};
 
+        Utility::IMGUIWrapper m_imgui {m_window};
+
         thor::ResourceHolder<sf::Texture, std::string> m_textureHolder {};
         thor::ResourceHolder<sf::Image, std::string> m_imageHolder {};
         thor::ResourceHolder<sf::Font, std::string> m_fontHolder {};
         thor::ResourceHolder<selbaward::BitmapFont, std::string> m_bitmapFontHolder {};
         thor::ResourceHolder<sf::SoundBuffer, std::string> m_soundHolder {};
-        std::stack<std::unique_ptr<State>> m_states;
+        StateMachine m_statemachine;
 
         chaiscript::ChaiScript m_scriptEngine;
         Parameters m_params;
@@ -118,7 +120,8 @@ class Application : private sf::NonCopyable
         Resources m_resourcesObject { m_textureHolder, m_imageHolder, m_fontHolder,
                     m_bitmapFontHolder, m_soundHolder };
 
-        State::Context m_contextObject { m_window, m_resourcesObject,
+        State::Context m_contextObject { m_window, m_statemachine,
+                    m_resourcesObject,
                     m_scriptEngine,
                     m_pakContents, m_params};
 

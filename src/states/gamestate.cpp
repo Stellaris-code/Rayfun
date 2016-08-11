@@ -15,7 +15,7 @@
 **
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
-#include "gamestate.hpp"
+#include "states/gamestate.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -30,6 +30,8 @@
 #include "graphicsutility.hpp"
 #include "mathutility.hpp"
 #include "gameplayglobals.hpp"
+
+#include "statemachine.hpp"
 
 #include <iostream>
 #include <Thor/Math.hpp>
@@ -193,6 +195,11 @@ void GameState::update(const sf::Time& t_deltaTime)
     m_minimap.playerPos = sf::Vector2f(m_player.pos);
     m_minimap.playerAngle = static_cast<float>(m_player.angle + 90);
     m_minimap.update(t_deltaTime);
+
+    if (m_context.params.bindings.isActive("strafeleft"))
+    {
+        m_context.stateMachine.popState();
+    }
 }
 
 void GameState::display()

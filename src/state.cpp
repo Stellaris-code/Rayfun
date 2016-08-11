@@ -26,6 +26,7 @@ namespace Rayfun
 State::State(Context &t_context)
     : m_context(t_context)
 {
+    initChai();
 }
 
 } // namespace Rayfun

@@ -34,13 +34,16 @@ Application::Application(const sf::VideoMode &t_videoMode, const std::string &t_
                          const std::string& t_pakPath,
                          const sf::ContextSettings &t_contextSettings, unsigned t_fpsCap)
     : m_window(t_videoMode, t_windowName, sf::Style::Default, t_contextSettings),
-      m_scriptEngine(chaiscript::Std_Lib::library()), m_timePerFrame(sf::seconds(1.f / t_fpsCap))
+      m_imgui(m_window), m_statemachine(m_contextObject),
+      m_scriptEngine(chaiscript::Std_Lib::library()),
+      m_timePerFrame(sf::seconds(1.f / t_fpsCap))
 {
     m_window.setFramerateLimit(t_fpsCap);
     loadConfig();
     loadPak(t_pakPath);
 
     loadChaiInterfaces(m_scriptEngine, m_resourcesObject);
+    initChai();
 
     m_fontHolder.acquire("ubuntu_mono", thor::Resources::fromFile<sf::Font>("data/fonts/UbuntuMono-R.ttf"));
     m_fontHolder.acquire("doom", thor::Resources::fromFile<sf::Font>("data/fonts/DooM.ttf"));
@@ -57,7 +60,7 @@ Application::Application(const sf::VideoMode &t_videoMode, const std::string &t_
     m_statisticsText.setPosition(5.f, 5.f);
     m_statisticsText.setCharacterSize(10);
 
-    pushState(StateID::Game);
+    m_statemachine.pushState(StateID::Menu);
 }
 
 void Application::run()
@@ -66,47 +69,29 @@ void Application::run()
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while (m_window.isOpen())
     {
+        reloop:
         sf::Time elapsedTime = clock.restart();
         updateStats(elapsedTime);
         timeSinceLastUpdate += elapsedTime;
-        while (timeSinceLastUpdate > m_timePerFrame)
+        do
         {
             timeSinceLastUpdate -= m_timePerFrame;
             processEvents();
             update(m_timePerFrame);
 
-            if (m_states.empty())
+            if (m_statemachine.empty())
             {
                 m_window.close();
+                return;
             }
-        }
+
+            if (m_statemachine.changed())
+            {
+                goto reloop;
+            }
+        } while (timeSinceLastUpdate > m_timePerFrame);
         render();
     }
-}
-
-void Application::changeState(Rayfun::StateID t_state)
-{
-    if (!m_states.empty())
-    {
-        m_states.pop();
-    }
-
-    m_states.push(makeState(t_state, m_contextObject));
-}
-
-void Application::pushState(Rayfun::StateID t_state)
-{
-    m_states.push(makeState(t_state, m_contextObject));
-}
-
-void Application::popState()
-{
-    if (m_states.empty())
-    {
-        throw_application_error("Tried to pop empty state stack !");
-    }
-
-    m_states.pop();
 }
 
 void Application::processEvents()
@@ -115,8 +100,9 @@ void Application::processEvents()
     sf::Event event;
     while (m_window.pollEvent(event))
     {
+        ImGui::SFML::ProcessEvent(event);
         m_params.bindings.pushEvent(event);
-        m_states.top()->handleEvent(event);
+        m_statemachine.top()->handleEvent(event);
         switch (event.type)
         {
             case sf::Event::Closed:
@@ -131,15 +117,22 @@ void Application::processEvents()
 
 void Application::update(const sf::Time &t_deltatime)
 {
-    m_states.top()->update(t_deltatime);
+    ImGui::SFML::Update(t_deltatime);
+    m_statemachine.top()->update(t_deltatime);
 }
 
 void Application::render()
 {
     m_window.clear();
-    m_states.top()->display();
+    m_statemachine.top()->display();
     m_window.draw(m_statisticsText);
+    ImGui::Render();
     m_window.display();
+}
+
+void Application::initChai()
+{
+    m_scriptEngine.add(chaiscript::fun([this]{ return m_window.getSize(); }), "displaySize");
 }
 
 void Application::loadConfig()

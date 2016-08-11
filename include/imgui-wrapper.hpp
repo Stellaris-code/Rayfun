@@ -23,6 +23,9 @@
 namespace Rayfun
 {
 
+namespace Utility
+{
+
 class IMGUIWrapper
 {
     public:
@@ -36,6 +39,8 @@ class IMGUIWrapper
             ImGui::SFML::Shutdown();
         }
 };
+
+}
 
 }
 

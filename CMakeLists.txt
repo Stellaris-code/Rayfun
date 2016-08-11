@@ -5,6 +5,8 @@ include_directories(include)
 include_directories(extlibs)
 include_directories(extlibs/ChaiScript/include)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -ldl -msse3 -fopenmp -march=native -mtune=native")

@@ -16,6 +16,7 @@ static sf::Window* s_window = NULL;
 static sf::RenderTarget* s_renderTarget = NULL;
 static sf::Texture* s_fontTexture = NULL;
 static bool s_windowHasFocus = true;
+static bool s_updated = false;
 
 static bool s_mousePressed[5] = { false, false, false, false, false };
 
@@ -159,7 +160,11 @@ void Update(sf::Time dt)
         s_mousePressed[0] = s_mousePressed[1] = s_mousePressed[2] = false;
     }
 
-    ImGui::NewFrame();
+    if (!s_updated)
+    {
+        ImGui::NewFrame();
+        s_updated = true;
+    }
 }
 
 void Shutdown()
@@ -190,42 +195,42 @@ void SetRenderTarget(sf::RenderTarget& target)
 /////////////// Image Overloads
 
 void Image(const sf::Texture& texture,
-    const sf::Color& tintColor, const sf::Color& borderColor)
+           const sf::Color& tintColor, const sf::Color& borderColor)
 {
     Image(texture, static_cast<sf::Vector2f>(texture.getSize()), tintColor, borderColor);
 }
 
 void Image(const sf::Texture& texture, const sf::Vector2f& size,
-    const sf::Color& tintColor, const sf::Color& borderColor)
+           const sf::Color& tintColor, const sf::Color& borderColor)
 {
     ImGui::Image((void*)&texture, size, ImVec2(0, 0), ImVec2(1, 1), tintColor, borderColor);
 }
 
 void Image(const sf::Texture& texture, const sf::FloatRect& textureRect,
-    const sf::Color& tintColor, const sf::Color& borderColor)
+           const sf::Color& tintColor, const sf::Color& borderColor)
 {
     Image(texture, sf::Vector2f(textureRect.width, textureRect.height), textureRect, tintColor, borderColor);
 }
 
 void Image(const sf::Texture& texture, const sf::Vector2f& size, const sf::FloatRect& textureRect,
-    const sf::Color& tintColor, const sf::Color& borderColor)
+           const sf::Color& tintColor, const sf::Color& borderColor)
 {
     sf::Vector2f textureSize = static_cast<sf::Vector2f>(texture.getSize());
     ImVec2 uv0(textureRect.left / textureSize.x, textureRect.top / textureSize.y);
     ImVec2 uv1((textureRect.left + textureRect.width) / textureSize.x,
-        (textureRect.top + textureRect.height) / textureSize.y);
+               (textureRect.top + textureRect.height) / textureSize.y);
     ImGui::Image((void*)&texture, size, uv0, uv1, tintColor, borderColor);
 }
 
 void Image(const sf::Sprite& sprite,
-    const sf::Color& tintColor, const sf::Color& borderColor)
+           const sf::Color& tintColor, const sf::Color& borderColor)
 {
     sf::FloatRect bounds = sprite.getGlobalBounds();
     Image(sprite, sf::Vector2f(bounds.width, bounds.height), tintColor, borderColor);
 }
 
 void Image(const sf::Sprite& sprite, const sf::Vector2f& size,
-    const sf::Color& tintColor, const sf::Color& borderColor)
+           const sf::Color& tintColor, const sf::Color& borderColor)
 {
     const sf::Texture* texturePtr = sprite.getTexture();
     // sprite without texture cannot be drawn
@@ -237,27 +242,27 @@ void Image(const sf::Sprite& sprite, const sf::Vector2f& size,
 /////////////// Image Button Overloads
 
 bool ImageButton(const sf::Texture& texture,
-    const int framePadding, const sf::Color& bgColor, const sf::Color& tintColor)
+                 const int framePadding, const sf::Color& bgColor, const sf::Color& tintColor)
 {
     return ImageButton(texture, static_cast<sf::Vector2f>(texture.getSize()), framePadding, bgColor, tintColor);
 }
 
 bool ImageButton(const sf::Texture& texture, const sf::Vector2f& size,
-    const int framePadding, const sf::Color& bgColor, const sf::Color& tintColor)
+                 const int framePadding, const sf::Color& bgColor, const sf::Color& tintColor)
 {
     sf::Vector2f textureSize = static_cast<sf::Vector2f>(texture.getSize());
     return ::imageButtonImpl(texture, sf::FloatRect(0.f, 0.f, textureSize.x, textureSize.y), size, framePadding, bgColor, tintColor);
 }
 
 bool ImageButton(const sf::Sprite& sprite,
-    const int framePadding, const sf::Color& bgColor, const sf::Color& tintColor)
+                 const int framePadding, const sf::Color& bgColor, const sf::Color& tintColor)
 {
     sf::FloatRect spriteSize = sprite.getGlobalBounds();
     return ImageButton(sprite, sf::Vector2f(spriteSize.width, spriteSize.height), framePadding, bgColor, tintColor);
 }
 
 bool ImageButton(const sf::Sprite& sprite, const sf::Vector2f& size,
-    const int framePadding, const sf::Color& bgColor, const sf::Color& tintColor)
+                 const int framePadding, const sf::Color& bgColor, const sf::Color& tintColor)
 {
     const sf::Texture* texturePtr = sprite.getTexture();
     if (!texturePtr) { return false; }
@@ -267,7 +272,7 @@ bool ImageButton(const sf::Sprite& sprite, const sf::Vector2f& size,
 /////////////// Draw_list Overloads
 
 void DrawLine(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Color& color,
-    float thickness)
+              float thickness)
 {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     sf::Vector2f pos = ImGui::GetCursorScreenPos();
@@ -275,23 +280,23 @@ void DrawLine(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Color& col
 }
 
 void DrawRect(const sf::FloatRect& rect, const sf::Color& color,
-    float rounding, int rounding_corners, float thickness)
+              float rounding, int rounding_corners, float thickness)
 {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddRect(
-        getTopLeftAbsolute(rect),
-        getDownRightAbsolute(rect),
-        ColorConvertFloat4ToU32(color), rounding, rounding_corners, thickness);
+                getTopLeftAbsolute(rect),
+                getDownRightAbsolute(rect),
+                ColorConvertFloat4ToU32(color), rounding, rounding_corners, thickness);
 }
 
 void DrawRectFilled(const sf::FloatRect& rect, const sf::Color& color,
-    float rounding, int rounding_corners)
+                    float rounding, int rounding_corners)
 {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddRect(
-        getTopLeftAbsolute(rect),
-        getDownRightAbsolute(rect),
-        ColorConvertFloat4ToU32(color), rounding, rounding_corners);
+                getTopLeftAbsolute(rect),
+                getDownRightAbsolute(rect),
+                ColorConvertFloat4ToU32(color), rounding, rounding_corners);
 }
 
 } // end of namespace ImGui
@@ -313,6 +318,7 @@ ImVec2 getDownRightAbsolute(const sf::FloatRect & rect)
 void RenderDrawLists(ImDrawData* draw_data)
 {
     assert(s_renderTarget);
+    s_updated = false;
     if (draw_data->CmdListsCount == 0) {
         return;
     }
@@ -333,8 +339,8 @@ void RenderDrawLists(ImDrawData* draw_data)
 
     // do GL stuff
     glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT);
-    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_SCISSOR_TEST);
@@ -370,7 +376,7 @@ void RenderDrawLists(ImDrawData* draw_data)
                 sf::Vector2u win_size = s_renderTarget->getSize();
                 sf::Texture::bind(texture);
                 glScissor((int)pcmd->ClipRect.x, (int)(win_size.y - pcmd->ClipRect.w),
-                    (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+                          (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
                 glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, GL_UNSIGNED_SHORT, idx_buffer);
             }
             idx_buffer += pcmd->ElemCount;

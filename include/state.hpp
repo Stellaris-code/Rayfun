@@ -41,6 +41,7 @@ namespace Rayfun
 struct PakContents;
 class Parameters;
 class Resources;
+class StateMachine;
 
 class State : private sf::NonCopyable
 {
@@ -48,6 +49,7 @@ class State : private sf::NonCopyable
         struct Context
         {
                 sf::RenderWindow& window;
+                StateMachine& stateMachine;
                 Resources& resources;
                 chaiscript::ChaiScript& scriptEngine;
                 PakContents& mapPack;

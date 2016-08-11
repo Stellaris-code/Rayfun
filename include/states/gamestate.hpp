@@ -71,6 +71,7 @@ class GameState : public State
         thor::ActionMap<std::string>::CallbackSystem m_callbacks;
         Minimap m_minimap;
         size_t m_currentLevel { 0 };
+        static bool m_chaiInitialized;
 
         // debug
 

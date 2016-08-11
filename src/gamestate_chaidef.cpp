@@ -16,7 +16,7 @@
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#include "gamestate.hpp"
+#include "states/gamestate.hpp"
 
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/utility/utility.hpp>

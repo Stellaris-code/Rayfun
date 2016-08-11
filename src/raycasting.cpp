@@ -517,7 +517,7 @@ void floorCasting(const Camera &t_cam, const Map &t_map, const RaycastResult &t_
         return t_cam.screenSize().y / (2.f * i - t_cam.screenSize().y);
     });
 #pragma omp parallel for simd
-    for (size_t j { static_cast<size_t>(t_drawEnd) + 1 }; j < t_cam.screenSize().y; ++j)
+    for (size_t j = static_cast<size_t>(t_drawEnd) + 1; j < t_cam.screenSize().y; ++j)
     {
         //const double currentDist = t_cam.screenSize().y / (2.f * j - t_cam.screenSize().y);
         const double currentDist = lut[j];
