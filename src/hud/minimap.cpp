@@ -19,7 +19,7 @@
 
 #include <cassert>
 
-#include "graphicsutility.hpp"
+#include "utils/graphicsutility.hpp"
 
 #include "map.hpp"
 

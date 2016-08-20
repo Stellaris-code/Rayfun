@@ -47,6 +47,7 @@
 #include "statemachine.hpp"
 #include "parameters.hpp"
 #include "pakcontents.hpp"
+#include "screenmelt.hpp"
 #include "imgui-wrapper.hpp"
 
 namespace Rayfun
@@ -110,7 +111,11 @@ class Application : private sf::NonCopyable
         thor::ResourceHolder<sf::Font, std::string> m_fontHolder {};
         thor::ResourceHolder<selbaward::BitmapFont, std::string> m_bitmapFontHolder {};
         thor::ResourceHolder<sf::SoundBuffer, std::string> m_soundHolder {};
+
         StateMachine m_statemachine;
+        MeltTransition m_screenMelt;
+        bool m_melting { false };
+        bool m_firstScreen { true };
 
         chaiscript::ChaiScript m_scriptEngine;
         Parameters m_params;

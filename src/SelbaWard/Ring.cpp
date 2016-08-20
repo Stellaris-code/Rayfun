@@ -32,6 +32,8 @@
 
 #include "SelbaWard/Ring.hpp"
 
+#include <cmath>
+
 #include <SFML/Graphics/Texture.hpp>
 
 namespace

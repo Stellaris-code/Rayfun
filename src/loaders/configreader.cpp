@@ -21,7 +21,7 @@
 
 #include "parameters.hpp"
 
-#include "utility.hpp"
+#include "utils/utility.hpp"
 
 namespace Rayfun
 {

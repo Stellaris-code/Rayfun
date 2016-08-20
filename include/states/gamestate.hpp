@@ -33,6 +33,7 @@
 #include "weapon.hpp"
 #include "level.hpp"
 #include "pakcontents.hpp"
+#include "shaderrendersurface.hpp"
 
 #include "hud/minimap.hpp"
 #include "hud/hud.hpp"
@@ -59,8 +60,8 @@ class GameState : public State
         virtual void initChai() override;
 
     public:
-        Level& currentLevel() { return m_context.mapPack.levels[m_currentLevel]; }
-        const Level& currentLevel() const { return m_context.mapPack.levels[m_currentLevel]; }
+        Level& currentLevel() { return m_context.mapPack.level; }
+        const Level& currentLevel() const { return m_context.mapPack.level; }
 
     private:
         Player m_player;
@@ -72,6 +73,7 @@ class GameState : public State
         Minimap m_minimap;
         size_t m_currentLevel { 0 };
         static bool m_chaiInitialized;
+        ShaderRenderSurface m_renderSurface;
 
         // debug
 

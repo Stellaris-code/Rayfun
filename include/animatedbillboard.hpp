@@ -59,6 +59,7 @@ class AnimatedBillboard : public DrawableActor
         sf::Image m_img;
         sf::Time m_progress;
         size_t m_currentFrame { 0 };
+        std::vector<Frame> m_defaultFrame { { sf::seconds(0.1), {0, 0, 1, 1} } };
         std::vector<std::pair<std::pair<double, double>, std::vector<Frame>>> m_frameQueue;
 };
 

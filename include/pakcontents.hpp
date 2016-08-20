@@ -20,10 +20,12 @@
 
 #include <string>
 #include <vector>
+#include <map.hpp>
 
 #include <SFML/Audio/Music.hpp>
 
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Image.hpp>
 
 #include <Thor/Animations/FrameAnimation.hpp>
 
@@ -41,8 +43,9 @@ struct PakContents
     std::string date;
     sf::Texture menuBkg;
     sf::Music menuMusic;
-    std::vector<Level> levels;
+    Level level;
     std::vector<WeaponStructure> weapons;
+    std::map<std::string, sf::Image> textures;
 };
 
 } // namespace Rayfun

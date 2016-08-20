@@ -34,6 +34,8 @@
 
 #include "SelbaWard/Sprite3d.hpp"
 
+#include <cmath>
+
 namespace selbaward
 {
 

@@ -22,10 +22,10 @@
 namespace Rayfun
 {
 
-StateMachine::StateMachine(State::Context &t_contextObject)
+StateMachine::StateMachine(State::Context &t_contextObject, const sf::RenderWindow &t_window)
     : m_contextObject(t_contextObject)
 {
-
+    m_lastFrame.create(t_window.getSize().x, t_window.getSize().y);
 }
 
 void StateMachine::changeState(StateID t_state)
@@ -40,10 +40,11 @@ void StateMachine::changeState(StateID t_state)
 
 void StateMachine::pushState(StateID t_state)
 {
+    m_lastFrame.update(m_contextObject.window);
+    m_changed = true;
     m_states.push(std::pair<chaiscript::ChaiScript::State, std::unique_ptr<State>>(
                       m_contextObject.scriptEngine.get_state(),
                       makeState(t_state, m_contextObject)));
-    m_changed = true;
 }
 
 void StateMachine::popState()
@@ -53,9 +54,10 @@ void StateMachine::popState()
         throw_statemachine_error("Tried to pop empty state stack !");
     }
 
+    m_lastFrame.update(m_contextObject.window);
     m_contextObject.scriptEngine.set_state(m_states.top().first);
-    m_states.pop();
     m_changed = true;
+    m_states.pop();
 }
 
 }

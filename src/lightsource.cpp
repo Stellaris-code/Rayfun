@@ -17,7 +17,7 @@
 */
 #include "lightsource.hpp"
 
-#include "mathutility.hpp"
+#include "utils/mathutility.hpp"
 #include "raycasting.hpp"
 
 #include "pakcontents.hpp"
@@ -30,7 +30,7 @@ void LightSource::update(const sf::Time &)
     for (double d { 0 }; d < 360; d+=0.01)
     {
         auto result = Raycasting::castRay(pos, Utility::angleToVector<double>(d),
-                                         m_context.mapPack.levels[m_context.currentLevelIndex].map).back();
+                                         m_context.mapPack.level.map).back();
         if (result.tileHit)
         {
             double wallX { 0 };

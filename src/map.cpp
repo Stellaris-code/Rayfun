@@ -17,7 +17,7 @@
 */
 #include "map.hpp"
 
-#include "graphicsutility.hpp"
+#include "utils/graphicsutility.hpp"
 
 namespace Rayfun
 {
@@ -43,6 +43,12 @@ Tile &Map::tileAt(const sf::Vector2s &t_pos)
 {
     assert(t_pos.x < m_size.x && t_pos.y < m_size.y);
     return m_tiles[t_pos.y * m_size.x + t_pos.x];
+}
+
+void Map::setSize(const sf::Vector2s &t_size)
+{
+    m_size = t_size;
+    m_tiles.resize(t_size.x * t_size.y);
 }
 
 sf::Vector2s Map::size() const

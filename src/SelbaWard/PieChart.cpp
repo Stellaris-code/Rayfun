@@ -32,6 +32,7 @@
 
 #include "SelbaWard/PieChart.hpp"
 
+#include <cmath>
 #include <iostream>
 
 namespace

@@ -22,7 +22,7 @@
 #include <json/value.h>
 #include <json/reader.h>
 
-#include "utility.hpp"
+#include "utils/utility.hpp"
 
 namespace Rayfun
 {

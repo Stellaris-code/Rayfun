@@ -32,6 +32,8 @@
 
 #include "SelbaWard/SpinningCard.hpp"
 
+#include <cmath>
+
 namespace selbaward
 {
 

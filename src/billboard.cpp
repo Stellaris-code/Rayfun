@@ -17,7 +17,7 @@
 */
 #include "billboard.hpp"
 
-#include "mathutility.hpp"
+#include "utils/mathutility.hpp"
 
 namespace Rayfun
 {

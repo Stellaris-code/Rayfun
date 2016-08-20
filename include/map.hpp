@@ -40,6 +40,7 @@ namespace Rayfun
 class Map : sf::NonCopyable
 {
     public:
+        Map() = default;
         explicit Map(const sf::Vector2s& t_size);
 
     public:
@@ -47,12 +48,16 @@ class Map : sf::NonCopyable
         const Tile &tileAt(const sf::Vector2s &t_pos) const;
         Tile &tileAt(const sf::Vector2s &t_pos);
 
+        void setSize(const sf::Vector2s& t_size);
         sf::Vector2s size() const;
 
         boost::optional<Sector&> sectorAt(const sf::Vector2s &t_pos);
         boost::optional<Sector> sectorAt(const sf::Vector2s &t_pos) const;
 
         void update(const sf::Time& t_deltaTime);
+
+        const Tile* tiles() const
+        { return m_tiles.data(); }
 
     public:
         std::vector<Sector> sectors {};
@@ -65,7 +70,7 @@ class Map : sf::NonCopyable
     private:
         //boost::multi_array<Tile, 2> m_tiles {};
         std::vector<Tile> m_tiles;
-        const sf::Vector2s m_size;
+        sf::Vector2s m_size;
 };
 
 } // namespace Rayfun

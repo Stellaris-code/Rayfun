@@ -1,4 +1,4 @@
-/*  include/menustate.hpp MenuState - Yann BOUCHER (yann) 10/08/2016
+/*  include/states/introstate.hpp IntroState - Yann BOUCHER (yann) 11/08/2016
 **
 **
 **            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -15,12 +15,9 @@
 **
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
-#ifndef MENUSTATE_HPP
-#define MENUSTATE_HPP
+#ifndef INTROSTATE_HPP
+#define INTROSTATE_HPP
 
-#include <functional>
-
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 
 #include "state.hpp"
@@ -28,10 +25,10 @@
 namespace Rayfun
 {
 
-class MenuState : public State
+class IntroState : public State
 {
     public:
-        explicit MenuState(State::Context& t_context);
+        explicit IntroState(State::Context& t_context);
 
     public:
         virtual void pause() override;
@@ -44,26 +41,13 @@ class MenuState : public State
 
         virtual void display() override;
 
-        virtual void initChai() override;
+    private:
+        void drawImgui();
 
     private:
-        enum SelectedOption
-        {
-            Play = 0,
-            Exit,
-            NoAction
-        };
-
-    private:
-        void loadMenuFile();
-        void loadLevel();
-
-    private:
-        std::function<SelectedOption()> m_drawCallback;
         sf::Sprite m_bckgSprite;
-        sf::Texture m_background;
 };
 
 }
 
-#endif // MENUSTATE_HPP
+#endif // INTROSTATE_HPP

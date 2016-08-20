@@ -16,7 +16,7 @@
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#include "gameplayglobals.hpp"
+#include "utils/gameplayglobals.hpp"
 
 #include <atomic>
 #include <thread>
@@ -35,8 +35,8 @@
 #include "actor.hpp"
 
 #include "raycasting.hpp"
-#include "mathutility.hpp"
-#include "graphicsutility.hpp"
+#include "utils/mathutility.hpp"
+#include "utils/graphicsutility.hpp"
 #include "map.hpp"
 
 #include "constants.hpp"

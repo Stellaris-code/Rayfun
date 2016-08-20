@@ -31,8 +31,8 @@
 
 #include <imgui/ImGui__ChaiScript.hpp>
 
-#include "gameplayglobals.hpp"
-#include "mathutility.hpp"
+#include "utils/gameplayglobals.hpp"
+#include "utils/mathutility.hpp"
 
 #include "actor.hpp"
 #include "map.hpp"

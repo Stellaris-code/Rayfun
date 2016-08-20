@@ -40,7 +40,6 @@ class ChaiScript;
 namespace Rayfun
 {
 
-class PakContents;
 class Map;
 
 class pakreader_error : public std::runtime_error
@@ -58,10 +57,10 @@ class PakReader : private sf::NonCopyable
     public:
         explicit PakReader(chaiscript::ChaiScript& t_chai, State::Context& t_context);
         PakReader(const std::string& t_path, chaiscript::ChaiScript& t_chai, PakContents& t_contents,
-                  State::Context& t_context);
+                  State::Context& t_context, size_t t_levelIndex = 0);
 
     public:
-        void open(const std::string& t_path, PakContents& t_contents);
+        void open(const std::string& t_path, PakContents& t_contents, size_t t_levelIndex = 0);
 
     private:
         Json::Value get(const Json::Value& t_root, const std::string& t_key,
@@ -77,12 +76,14 @@ class PakReader : private sf::NonCopyable
 
         template <typename T>
         bool fileToSfLoad(const ZipArchive::Ptr t_archive,
-                          const std::string& t_filePath, T& t_sf, bool t_loadInHolder = true) const;
+                          const std::string& t_filePath, T& t_sf, bool t_loadInHolder = false) const;
 
-        void loadInfo(const ZipArchive::Ptr t_archive, PakContents& t_contents);
+        bool getImage(const std::string& t_filename, sf::Image& t_image, PakContents& t_contents) const;
+
+        void loadInfo(const ZipArchive::Ptr t_archive, PakContents& t_contents, size_t t_levelIndex);
         void loadLevel(const ZipArchive::Ptr t_archive, const Json::Value& t_root, PakContents& t_contents);
-        void loadTile(const ZipArchive::Ptr t_archive, const Json::Value& t_tile, Map& t_map) const;
-        void loadSector(const ZipArchive::Ptr t_archive, const Json::Value& t_sector, Map& t_map) const;
+        void loadTile(const ZipArchive::Ptr, const Json::Value& t_tile, Map& t_map, PakContents& t_contents) const;
+        void loadSector(const ZipArchive::Ptr t_archive, const Json::Value& t_sector, Map& t_map, PakContents& t_contents) const;
         void loadTrigger(const ZipArchive::Ptr, const Json::Value& t_trigger, Map& t_map) const;
         void loadWeapon(const ZipArchive::Ptr t_archive, const Json::Value &t_root, PakContents& t_contents) const;
 

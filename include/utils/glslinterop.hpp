@@ -1,4 +1,4 @@
-/*  stateid %{Cpp:License:ClassName} - Yann BOUCHER (yann) 15/04/2016
+/*  glslinterop %{Cpp:License:ClassName} - Yann BOUCHER (yann) 18/08/2016
 **
 **
 **            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -15,21 +15,29 @@
 **
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
-#ifndef STATEID_HPP
-#define STATEID_HPP
+#ifndef GLSLINTEROP_HPP
+#define GLSLINTEROP_HPP
+
+#include <array>
+
+namespace sf
+{
+class Texture;
+class Image;
+}
 
 namespace Rayfun
 {
 
-enum class StateID
+class Map;
+
+namespace detail
 {
-    Menu,
-    Intro,
-    Game
-};
+void setTexIndex(std::size_t i, std::size_t j, const std::array<unsigned char, 4>& texIndex, sf::Image& img);
+}
 
+sf::Texture mapToTexture(const Map& t_map);
 
+}
 
-} // namespace Rayfun
-
-#endif // STATEID_HPP
+#endif // GLSLINTEROP_HPP

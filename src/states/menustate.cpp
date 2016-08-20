@@ -17,6 +17,8 @@
 */
 #include "states/menustate.hpp"
 
+#include "imgui/imgui.h"
+
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <chaiscript/chaiscript.hpp>
@@ -25,6 +27,7 @@
 
 #include "common.hpp"
 
+#include "pakcontents.hpp"
 #include "statemachine.hpp"
 #include "constants.hpp"
 
@@ -63,7 +66,7 @@ void MenuState::update(const sf::Time &)
         switch(m_drawCallback())
         {
             case SelectedOption::Play:
-                m_context.stateMachine.pushState(StateID::Game);
+                loadLevel();
                 break;
             case SelectedOption::Exit:
                 m_context.stateMachine.popState();
@@ -86,11 +89,27 @@ void MenuState::initChai()
     m_context.scriptEngine.add_global_const(chaiscript::const_var(SelectedOption::Exit), "Exit");
     m_context.scriptEngine.add_global_const(chaiscript::const_var(SelectedOption::NoAction), "NoAction");
 
+    m_context.scriptEngine.add(chaiscript::fun([this]{ return m_context.mapPack.title; }), "mapPackTitle");
+    m_context.scriptEngine.add(chaiscript::fun([this]{ return m_context.mapPack.date; }), "mapPackDate");
+    m_context.scriptEngine.add(chaiscript::fun([this]{ return m_context.mapPack.desc; }), "mapPackDesc");
+    m_context.scriptEngine.add(chaiscript::fun([this]{ return m_context.mapPack.author; }), "mapPackAuthor");
 }
 
 void MenuState::loadMenuFile()
 {
     m_drawCallback = m_context.scriptEngine.eval_file<std::function<SelectedOption()>>(c_menuScript);
+}
+
+void MenuState::loadLevel()
+{
+    if (m_context.mapPack.level.intro)
+    {
+        m_context.stateMachine.pushState(StateID::Intro);
+    }
+    else
+    {
+        m_context.stateMachine.pushState(StateID::Game);
+    }
 }
 
 }

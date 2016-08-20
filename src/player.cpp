@@ -23,8 +23,8 @@
 
 #include "pakcontents.hpp"
 
-#include "gameplayglobals.hpp"
-#include "mathutility.hpp"
+#include "utils/gameplayglobals.hpp"
+#include "utils/mathutility.hpp"
 #include "raycasting.hpp"
 
 #include "weapon.hpp"
@@ -62,15 +62,15 @@ void Player::move(double t_amount)
 {
     auto newPos = pos + thor::rotatedVector(sf::Vector2d(t_amount, 0), angle);
     auto result = Raycasting::castRay(pos, thor::rotatedVector(sf::Vector2d(t_amount, 0), angle),
-                                      m_context.mapPack.levels[m_context.currentLevelIndex].map, Raycasting::HitMode::Clipping);
+                                      m_context.mapPack.level.map, Raycasting::HitMode::Clipping);
 
     DrawableActor* act = nullptr;
 
-    if ((sf::Vector2s(pos) == sf::Vector2s(newPos) ||
+    if (result.front().tileHit && ((sf::Vector2s(pos) == sf::Vector2s(newPos) ||
          (!result.front().tileHit->clip[result.front().side] ||
-          !m_context.mapPack.levels[0].map.tileAt(sf::Vector2s(newPos)).clip[result.front().side]) ||
-         !m_context.mapPack.levels[0].map.tileAt(sf::Vector2s(newPos)).isWall) &&
-            !spriteClipAt(newPos, m_context.mapPack.levels[m_context.currentLevelIndex].map, act))
+          !m_context.mapPack.level.map.tileAt(sf::Vector2s(newPos)).clip[result.front().side]) ||
+         !m_context.mapPack.level.map.tileAt(sf::Vector2s(newPos)).isWall) &&
+            !spriteClipAt(newPos, m_context.mapPack.level.map, act)))
     {
         m_deltaPos = newPos - pos;
         pos = newPos;
@@ -81,15 +81,15 @@ void Player::strafe(double t_amount)
 {
     auto newPos = pos + thor::rotatedVector(sf::Vector2d(t_amount, 0), angle + 90);
     auto result = Raycasting::castRay(pos, thor::rotatedVector(sf::Vector2d(t_amount, 0), angle + 90),
-                                      m_context.mapPack.levels[m_context.currentLevelIndex].map, Raycasting::HitMode::Clipping);
+                                      m_context.mapPack.level.map, Raycasting::HitMode::Clipping);
 
     DrawableActor* act = nullptr;
 
-    if ((sf::Vector2s(pos) == sf::Vector2s(newPos) ||
+    if (result.front().tileHit && ((sf::Vector2s(pos) == sf::Vector2s(newPos) ||
          (!result.front().tileHit->clip[result.front().side] ||
-          !m_context.mapPack.levels[0].map.tileAt(sf::Vector2s(newPos)).clip[result.front().side]) ||
-         !m_context.mapPack.levels[0].map.tileAt(sf::Vector2s(newPos)).isWall) &&
-            !spriteClipAt(newPos, m_context.mapPack.levels[m_context.currentLevelIndex].map, act))
+          !m_context.mapPack.level.map.tileAt(sf::Vector2s(newPos)).clip[result.front().side]) ||
+         !m_context.mapPack.level.map.tileAt(sf::Vector2s(newPos)).isWall) &&
+            !spriteClipAt(newPos, m_context.mapPack.level.map, act)))
     {
         m_deltaPos = newPos - pos;
         pos = newPos;
@@ -104,7 +104,7 @@ void Player::turn(double t_amount)
 void Player::use()
 {
     auto result = Raycasting::castRay(pos, Utility::angleToVector(angle),
-                                      m_context.mapPack.levels[m_context.currentLevelIndex].map, Raycasting::HitMode::Visibility).front();
+                                      m_context.mapPack.level.map, Raycasting::HitMode::Visibility).front();
     DrawableActor* actor = nullptr;
     if (result.distance <= 1 && result.tileHit)
     {
@@ -114,7 +114,7 @@ void Player::use()
         }
     }
     else if (Raycasting::rayIntersectsSprite(pos, Utility::angleToVector(angle),
-                                             m_context.mapPack.levels[m_context.currentLevelIndex].map,
+                                             m_context.mapPack.level.map,
                                              actor, 1))
     {
         if (actor && actor->ontrigger)

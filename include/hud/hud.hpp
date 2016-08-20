@@ -75,7 +75,7 @@ class HUD : public sf::Drawable, public sf::Transformable
         sf::Vector2d m_size { 0, 0 };
         sf::Text m_lifeArmor;
         sf::Text m_ammoList;
-        double m_runningTime;
+        double m_runningTime { 0 };
 };
 
 }

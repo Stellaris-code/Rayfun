@@ -115,6 +115,20 @@ inline std::string filenameFromPath(const std::string& t_path)
     return toks.back();
 }
 
+inline std::string fileToString(const std::string& t_path)
+{
+    try
+    {
+        std::ifstream t(t_path);
+        return std::string((std::istreambuf_iterator<char>(t)),
+                        std::istreambuf_iterator<char>());
+    }
+    catch (const std::exception& e)
+    {
+        throw std::runtime_error("Error reading file '" + t_path + "' : " + e.what());
+    }
+}
+
 inline Json::Value fileToJsonTree(const std::string& t_path)
 {
     std::ifstream fstream(t_path);

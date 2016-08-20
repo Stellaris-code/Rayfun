@@ -22,7 +22,7 @@
 #include <chaiscript/utility/utility.hpp>
 #include <iostream>
 
-#include "gameplayglobals.hpp"
+#include "utils/gameplayglobals.hpp"
 #include "pakcontents.hpp"
 
 namespace Rayfun
@@ -36,11 +36,11 @@ void GameState::initChai()
 
     module->add(chaiscript::fun([this]() -> Player& { return m_player; }), "getPlayer");
 
-    module->add(chaiscript::fun([this]() -> Map& { return m_context.mapPack.levels[m_context.currentLevelIndex].map; }), "getMap");
+    module->add(chaiscript::fun([this]() -> Map& { return m_context.mapPack.level.map; }), "getMap");
 
     module->add(chaiscript::fun([this](Actor& t_actor, sf::Vector2d t_src, sf::Vector2d t_dir, sf::Vector2d t_spread,
                                 size_t t_dmg, size_t t_num, std::string t_dmgType, size_t t_maxDistance)
-    { fireBullets(t_actor, t_src, t_dir, t_spread, m_context.mapPack.levels[m_context.currentLevelIndex].map, m_context, t_dmg,
+    { fireBullets(t_actor, t_src, t_dir, t_spread, m_context.mapPack.level.map, m_context, t_dmg,
       t_num, t_dmgType, t_maxDistance); }), "fireBullets");
 
     m_context.scriptEngine.add(module);

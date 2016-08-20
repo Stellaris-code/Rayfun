@@ -21,6 +21,9 @@
 #include <memory>
 #include <stack>
 
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+
 #include <chaiscript/chaiscript.hpp>
 
 #include "stateid.hpp"
@@ -44,7 +47,7 @@ class statemachine_error : public std::runtime_error
 class StateMachine
 {
     public:
-        StateMachine(State::Context& t_contextObject);
+        StateMachine(State::Context& t_contextObject, const sf::RenderWindow& t_window);
 
         void changeState(StateID t_state);
         void pushState(StateID t_state);
@@ -64,10 +67,14 @@ class StateMachine
             return changed;
         }
 
+        const sf::Texture& lastStateFrame() const
+        { return m_lastFrame; }
+
     private:
         std::stack<std::pair<chaiscript::ChaiScript::State, std::unique_ptr<State>>> m_states;
         State::Context& m_contextObject;
         mutable bool m_changed { false };
+        sf::Texture m_lastFrame;
 };
 
 }

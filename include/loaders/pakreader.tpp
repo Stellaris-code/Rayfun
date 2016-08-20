@@ -27,8 +27,8 @@
 #include <Thor/Resources/SfmlLoaders.hpp>
 #include <Thor/Resources/ResourceExceptions.hpp>
 
-#include "utility.hpp"
-#include "graphicsutility.hpp"
+#include "utils/utility.hpp"
+#include "utils/graphicsutility.hpp"
 
 #include "pakcontents.hpp"
 
@@ -94,7 +94,6 @@ inline bool PakReader::fileToSfLoad(const ZipArchive::Ptr t_archive,
     else
     {
         return t_sf.loadFromMemory(reinterpret_cast<void*>(data.data()), entry->GetSize());
-        return false;
     }
 }
 

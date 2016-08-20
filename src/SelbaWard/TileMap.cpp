@@ -32,6 +32,8 @@
 
 #include "SelbaWard/TileMap.hpp"
 
+#include <cmath>
+
 namespace
 {
 

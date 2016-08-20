@@ -84,22 +84,22 @@ double Camera::angle() const
     return thor::toDegree(std::atan2(m_direction.y, m_direction.x));
 }
 
-sf::Vector2d Camera::plane() const
+const sf::Vector2d& Camera::plane() const
 {
     return m_plane;
 }
 
-sf::Vector2d Camera::direction() const
+const sf::Vector2d &Camera::direction() const
 {
     return m_direction;
 }
 
-sf::Vector2d Camera::pos() const
+const sf::Vector2d& Camera::pos() const
 {
     return m_pos;
 }
 
-sf::Vector2s Camera::screenSize() const
+const sf::Vector2s& Camera::screenSize() const
 {
     return m_screenSize;
 }

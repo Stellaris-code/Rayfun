@@ -16,7 +16,7 @@
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
-#include "graphicsutility.hpp"
+#include "utils/graphicsutility.hpp"
 
 #include <cassert>
 
@@ -29,6 +29,8 @@
 #include <SFML/Graphics/BlendMode.hpp>
 #include <SFML/Graphics/Rect.hpp>
 
+#include <SFML/OpenGL.hpp>
+
 #include <SFML/System/Vector2.hpp>
 
 #include <Thor/Math/Random.hpp>
@@ -36,7 +38,7 @@
 
 #include <iostream>
 
-#include "mathutility.hpp"
+#include "utils/mathutility.hpp"
 
 #include "common.hpp"
 
@@ -143,7 +145,7 @@ sf::Color bilinearFilter(const sf::Image& t_image, double t_u, double t_v)
     return result;
 }
 
-void setBrightness(sf::Color& t_color, unsigned char t_brightness)
+void setBrightness(sf::Color& t_color, unsigned t_brightness)
 {
     t_color.r = t_color.r * t_brightness / 255;
     t_color.g = t_color.g * t_brightness / 255;
@@ -195,7 +197,28 @@ std::vector<sf::Color> imageStripe(const sf::Image &t_image, unsigned t_y)
     assert(t_y < t_image.getSize().y);
 
     return std::vector<sf::Color>(t_image.getPixelsPtr() + t_image.getSize().x * t_y,
-                       t_image.getPixelsPtr() + t_image.getSize().x * (t_y + 1) - 1);
+                                  t_image.getPixelsPtr() + t_image.getSize().x * (t_y + 1) - 1);
+}
+
+void createTextureArray(sf::Texture &t_targetTex, const std::vector<sf::Image> &t_textures)
+{
+    assert(!t_textures.empty());
+
+    glBindTexture(GL_TEXTURE_2D_ARRAY, t_targetTex.getNativeHandle());
+
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, t_textures[0].getSize().x, t_textures[0].getSize().y,
+            t_textures.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+    for (size_t i { 0 }; i < t_textures.size(); ++i)
+    {
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, t_textures[0].getSize().x, t_textures[0].getSize().y,
+                1, GL_RGBA, GL_UNSIGNED_BYTE, t_textures[i].getPixelsPtr());
+
+        glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+    }
 }
 
 }

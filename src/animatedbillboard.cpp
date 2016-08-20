@@ -17,7 +17,7 @@
 */
 #include "animatedbillboard.hpp"
 
-#include "mathutility.hpp"
+#include "utils/mathutility.hpp"
 #include <iostream>
 
 namespace Rayfun
@@ -90,6 +90,8 @@ std::vector<AnimatedBillboard::Frame>& AnimatedBillboard::angleToFrame(double t_
             return pair.second;
         }
     }
+
+    return m_defaultFrame;
 }
 
 AnimatedBillboard::Frame &AnimatedBillboard::currentFrame()

@@ -45,8 +45,10 @@ struct Level : sf::NonCopyable
         std::string name {};
         sf::Time parTime {};
         sf::Music music {};
+        bool intro { false };
         std::string beginMessage {};
         sf::Texture beginBkg {};
+        bool outro { false };
         std::string endMessage {};
         sf::Texture endBkg {};
 };

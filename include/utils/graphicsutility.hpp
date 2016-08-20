@@ -64,10 +64,12 @@ sf::Color getPixelWrapped(const sf::Image& t_image, sf::Vector2u t_pos);
 
 sf::Color bilinearFilter(const sf::Image& t_image, double t_u, double t_v);
 
-void setBrightness(sf::Color &t_color, unsigned char t_brightness);
+void setBrightness(sf::Color &t_color, unsigned t_brightness);
 unsigned char getBrigthness(const sf::Color& t_color);
 
 void slideImage(sf::Image& t_image, Side t_direction, size_t t_amount);
+
+void createTextureArray(sf::Texture& t_targetTex, const std::vector<sf::Image>& t_textures);
 
 }
 }

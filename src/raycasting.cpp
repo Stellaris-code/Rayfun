@@ -36,9 +36,9 @@
 #include "map.hpp"
 #include "drawableactor.hpp"
 
-#include "mathutility.hpp"
-#include "graphicsutility.hpp"
-#include "utility.hpp"
+#include "utils/mathutility.hpp"
+#include "utils/graphicsutility.hpp"
+#include "utils/utility.hpp"
 
 namespace Rayfun
 {
@@ -305,9 +305,8 @@ std::vector<sf::Uint8> render(const Camera& t_cam, const Map& t_map, bool biline
                     else
                     {
                         color = result.tileHit->tex[result.side]->getPixel(texX, texY);
-                        if (result.tileHit->decals[result.side] &&
-                                (result.tileHit->decals[result.side]->getPixel(texX, texY).a
-                                != 0xFE || true))
+                        if (result.tileHit->decals[result.side] && texX < result.tileHit->decals[result.side]->getSize().x &&
+                                texY < result.tileHit->decals[result.side]->getSize().y)
                         {
                             color = thor::blendColors(result.tileHit->tex[result.side]->getPixel(texX, texY),
                                     result.tileHit->decals[result.side]->getPixel(texX, texY),

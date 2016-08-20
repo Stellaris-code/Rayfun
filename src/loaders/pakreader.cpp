@@ -41,13 +41,13 @@ PakReader::PakReader(chaiscript::ChaiScript& t_chai, State::Context &t_context)
 {}
 
 PakReader::PakReader(const std::string &t_path, chaiscript::ChaiScript &t_chai, PakContents& t_contents,
-                     State::Context &t_context)
+                     State::Context &t_context, size_t t_levelIndex)
     : m_chai(t_chai), m_context(t_context)
 {
-    open(t_path, t_contents);
+    open(t_path, t_contents, t_levelIndex);
 }
 
-void PakReader::open(const std::string& t_path, PakContents& t_contents)
+void PakReader::open(const std::string& t_path, PakContents& t_contents, size_t t_levelIndex)
 {
     m_path = t_path;
     ZipArchive::Ptr archive = ZipFile::Open(m_path);
@@ -57,7 +57,7 @@ void PakReader::open(const std::string& t_path, PakContents& t_contents)
     }
     try
     {
-        loadInfo(archive, t_contents);
+        loadInfo(archive, t_contents, t_levelIndex);
     }
     catch (const Json::RuntimeError& e)
     {
@@ -181,7 +181,20 @@ Json::Value PakReader::fileToJson(const ZipArchive::Ptr t_archive,
     return root;
 }
 
-void PakReader::loadInfo(const ZipArchive::Ptr t_archive, PakContents &t_contents)
+bool PakReader::getImage(const std::string &t_filename, sf::Image &t_image, PakContents &t_contents) const
+{
+    if (t_contents.textures.find(t_filename) != t_contents.textures.cend())
+    {
+        t_image = t_contents.textures.at(t_filename);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void PakReader::loadInfo(const ZipArchive::Ptr t_archive, PakContents &t_contents, size_t t_levelIndex)
 {
     Json::Value root = fileToJson(t_archive, c_infoFile);
 
@@ -199,16 +212,6 @@ void PakReader::loadInfo(const ZipArchive::Ptr t_archive, PakContents &t_content
                                                                  get(root, "menu_music").asString(), t_contents.menuMusic))
     {
         throw_pakreader_error(m_currentFile, "cannot open '" + get(root, "menu_music").asString() + "' !");
-    }
-
-    if (!get(root, "levels").isArray())
-    {
-        throw_pakreader_error(m_currentFile, "'levels' key has to be an array !");
-    }
-
-    for (auto v : get(root, "levels"))
-    {
-        loadLevel(t_archive, fileToJson(t_archive, c_levelPrefix + v.asString()), t_contents);
     }
 
     if (!get(root, "weapons", true).isNull())
@@ -249,6 +252,7 @@ void PakReader::loadInfo(const ZipArchive::Ptr t_archive, PakContents &t_content
         {
             sf::Image img;
             fileToSfLoad(t_archive, c_texPrefix + v.asString(), img, true);
+            t_contents.textures[v.asString()] = img;
         }
     }
 
@@ -265,6 +269,20 @@ void PakReader::loadInfo(const ZipArchive::Ptr t_archive, PakContents &t_content
             fileToSfLoad(t_archive, c_soundsPrefix + v.asString(), sound, true);
         }
     }
+
+    if (!get(root, "levels").isArray())
+    {
+        throw_pakreader_error(m_currentFile, "'levels' key has to be an array !");
+    }
+
+    if (t_levelIndex >= get(root, "levels").size())
+    {
+        throw_pakreader_error(m_currentFile, "level index is invalid ! (" + std::to_string(t_levelIndex)
+                              + ", max is : " + std::to_string(get(root, "levels").size()) + ")");
+    }
+
+        loadLevel(t_archive, fileToJson(t_archive, c_levelPrefix +
+                                        get(root, "levels")[unsigned(t_levelIndex)].asString()), t_contents);
 }
 
 void PakReader::loadLevel(const ZipArchive::Ptr t_archive, const Json::Value &t_root, PakContents &t_contents)
@@ -273,54 +291,66 @@ void PakReader::loadLevel(const ZipArchive::Ptr t_archive, const Json::Value &t_
     mapSize.x = get(t_root, "width").asUInt();
     mapSize.y = get(t_root, "height").asUInt();
 
-    t_contents.levels.emplace_back(mapSize);
+    t_contents.level.map.setSize(mapSize);
 
-    t_contents.levels.back().map.ambientLight = boost::algorithm::clamp(get(t_root, "ambientlight").asUInt(), 0, 255);
+    t_contents.level.map.ambientLight = boost::algorithm::clamp(get(t_root, "ambientlight").asUInt(), 0, 255);
 
-    t_contents.levels.back().name = get(t_root, "name").asString();
-    t_contents.levels.back().parTime = sf::seconds(get(t_root, "partime").asUInt());
+    t_contents.level.name = get(t_root, "name").asString();
+    t_contents.level.parTime = sf::seconds(get(t_root, "partime").asUInt());
     if (!get(t_root, "music", true).isNull() &&
-            !fileToSfLoad(t_archive, get(t_root, "music").asString(), t_contents.levels.back().music))
+            !fileToSfLoad(t_archive, get(t_root, "music").asString(), t_contents.level.music))
     {
         throw_pakreader_error(m_currentFile, "cannot open '" + get(t_root, "music").asString() + "' !");
     }
 
-    t_contents.levels.back().beginMessage = get(t_root, "beginmessage", true).asString();
-    if (!get(t_root, "beginmessage", true).isNull() &&
-            !fileToSfLoad(t_archive, c_texPrefix + get(t_root, "beginmessageimage").asString(), t_contents.levels.back().beginBkg))
+    t_contents.level.beginMessage = get(t_root, "beginmessage", true).asString();
+    if (!get(t_root, "beginmessage", true).isNull())
     {
-        throw_pakreader_error(m_currentFile, "cannot open '" + get(t_root, "beginmessageimage").asString() + "' !");
+        if (!fileToSfLoad(t_archive, c_texPrefix + get(t_root, "beginmessageimage").asString(), t_contents.level.beginBkg))
+        {
+            throw_pakreader_error(m_currentFile, "cannot open '" + get(t_root, "beginmessageimage").asString() + "' !");
+        }
+        else
+        {
+            t_contents.level.intro = true;
+        }
     }
 
-    t_contents.levels.back().endMessage = get(t_root, "endmessage", true).asString();
-    if (!get(t_root, "endmessage", true).isNull() &&
-            !fileToSfLoad(t_archive, c_texPrefix + get(t_root, "endmessageimage").asString(), t_contents.levels.back().endBkg))
+    t_contents.level.endMessage = get(t_root, "endmessage", true).asString();
+    if (!get(t_root, "endmessage", true).isNull())
     {
-        throw_pakreader_error(m_currentFile, "cannot open '" + get(t_root, "endmessageimage").asString() + "' !");
+        if (!fileToSfLoad(t_archive, c_texPrefix + get(t_root, "endmessageimage").asString(), t_contents.level.endBkg))
+        {
+            throw_pakreader_error(m_currentFile, "cannot open '" + get(t_root, "endmessageimage").asString() + "' !");
+        }
+        else
+        {
+            t_contents.level.outro = true;
+        }
     }
 
     for (auto tile : get(t_root, "tiles"))
     {
-        loadTile(t_archive, tile, t_contents.levels.back().map);
+        loadTile(t_archive, tile, t_contents.level.map, t_contents);
     }
     for (auto sector : get(t_root, "sectors", true))
     {
-        loadSector(t_archive, sector, t_contents.levels.back().map);
+        loadSector(t_archive, sector, t_contents.level.map, t_contents);
     }
     for (auto trigger : get(t_root, "triggers", true))
     {
-        loadTrigger(t_archive, trigger, t_contents.levels.back().map);
+        loadTrigger(t_archive, trigger, t_contents.level.map);
     }
     for (auto actor : get(t_root, "actors", true))
     {
         if (get(actor, "type") == "Billboard")
         {
-            loadBillboard(t_archive, actor, t_contents.levels.back().map);
+            loadBillboard(t_archive, actor, t_contents.level.map);
         }
     }
 }
 
-void PakReader::loadTile(const ZipArchive::Ptr t_archive, const Json::Value& t_tile, Map& t_map) const
+void PakReader::loadTile(const ZipArchive::Ptr, const Json::Value& t_tile, Map& t_map, PakContents& t_contents) const
 {
     Tile tile;
     tile.isWall = true;
@@ -338,7 +368,7 @@ void PakReader::loadTile(const ZipArchive::Ptr t_archive, const Json::Value& t_t
     {
         for (auto side : { Side::North, Side::South, Side::East, Side::West })
         {
-            if (!fileToSfLoad(t_archive, c_texPrefix + texNames[side], textures[side], true))
+            if (!getImage(texNames[side], textures[side], t_contents))
             {
                 tile.tex[side] = nullptr;
             }
@@ -379,9 +409,9 @@ void PakReader::loadTile(const ZipArchive::Ptr t_archive, const Json::Value& t_t
                 auto function = m_chai.eval<std::remove_reference<decltype(tile.ontrigger[side])>::type>(triggers[side]);
                 tile.ontrigger[side] = [function, side, triggers](Actor& act, Tile& intile)
                 {
-//                    std::thread([function, triggers, side, &act, &intile]{
-                        function(act, intile);
-              //      }).detach();
+                    //                    std::thread([function, triggers, side, &act, &intile]{
+                    function(act, intile);
+                    //      }).detach();
                 };
             }
         }
@@ -402,7 +432,7 @@ void PakReader::loadTile(const ZipArchive::Ptr t_archive, const Json::Value& t_t
     }
 }
 
-void PakReader::loadSector(const ZipArchive::Ptr t_archive, const Json::Value& t_sector, Map& t_map) const
+void PakReader::loadSector(const ZipArchive::Ptr t_archive, const Json::Value& t_sector, Map& t_map, PakContents& t_contents) const
 {
     Sector sector;
     Json::Value jsonRect = get(t_sector, "rect");
@@ -425,12 +455,12 @@ void PakReader::loadSector(const ZipArchive::Ptr t_archive, const Json::Value& t
     sf::Image blank;
     blank.create(1, 1, sf::Color::White);
 
-    if (!fileToSfLoad(t_archive, c_texPrefix + get(t_sector, "floortex").asString(), sector.floor))
+    if (!getImage(get(t_sector, "floortex").asString(), sector.floor, t_contents))
     {
         throw_pakreader_error(m_currentFile, "cannot open '" + get(t_sector, "floortex").asString() + "' !");
     }
 
-    if (!fileToSfLoad(t_archive, c_texPrefix + get(t_sector, "ceiltex").asString(), sector.ceiling))
+    if (!getImage(get(t_sector, "ceiltex").asString(), sector.ceiling, t_contents))
     {
         throw_pakreader_error(m_currentFile, "cannot open '" + get(t_sector, "ceiltex").asString() + "' !");
     }

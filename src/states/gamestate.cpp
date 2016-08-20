@@ -15,6 +15,7 @@
 **
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
+
 #include "states/gamestate.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -27,9 +28,9 @@
 #include "player.hpp"
 
 #include "raycasting.hpp"
-#include "graphicsutility.hpp"
-#include "mathutility.hpp"
-#include "gameplayglobals.hpp"
+#include "utils/graphicsutility.hpp"
+#include "utils/mathutility.hpp"
+#include "utils/gameplayglobals.hpp"
 
 #include "statemachine.hpp"
 
@@ -43,7 +44,8 @@ GameState::GameState(Context &t_context)
     : State(t_context), m_cam(sf::Vector2s(m_context.window.getSize()) / 1UL, { 0, 0 },
                               t_context.params.fov, 0), m_screenSprite(m_renderTexture),
       m_player(m_context),
-      m_minimap(m_context.mapPack.levels[0].map, m_context.resources, sf::Vector2f(m_context.window.getSize())),
+      m_minimap(m_context.mapPack.level.map, m_context.resources, sf::Vector2f(m_context.window.getSize())),
+      m_renderSurface(sf::Vector2f(m_context.window.getSize())),
       bill(m_context), bill2(m_context),
       hud(m_context.resources)
 {
@@ -52,6 +54,18 @@ GameState::GameState(Context &t_context)
     m_screenSprite.setTexture(m_renderTexture, true);
     m_screenSprite.setPosition(0, 0);
     m_screenSprite.setScale(1, 1);
+
+    m_context.resources.textureHolder["textures/stone"].setSmooth(true);
+
+    std::vector<sf::Image> textures;
+
+    for (const auto& tex : m_context.mapPack.textures)
+    {
+        textures.push_back(tex.second);
+    }
+
+    m_renderSurface.loadTextureArray(textures);
+    m_renderSurface.setMap(m_context.resources.textureHolder["maps/map"]);
 
     bill2.addFrame(sf::seconds(0.1f), sf::IntRect(1, 83, 26, 96));
     bill2.addFrame(sf::seconds(0.1f), sf::IntRect(31, 83, 26, 96));
@@ -147,8 +161,12 @@ void GameState::resume()
 
 }
 
-void GameState::handleEvent(const sf::Event&)
+void GameState::handleEvent(const sf::Event& t_event)
 {
+    if (t_event.type == sf::Event::Resized)
+    {
+        m_renderSurface.setSize(sf::Vector2f(m_context.window.getSize()));
+    }
 }
 
 void GameState::update(const sf::Time& t_deltaTime)
@@ -156,7 +174,7 @@ void GameState::update(const sf::Time& t_deltaTime)
     m_lastDeltaTime = t_deltaTime;
     m_context.params.bindings.invokeCallbacks(m_callbacks, &m_context.window);
 
-    for (auto& t : m_context.mapPack.levels[m_context.currentLevelIndex].map.triggers)
+    for (auto& t : m_context.mapPack.level.map.triggers)
     {
         if (t.rect.contains(sf::Vector2s(m_player.pos)))
         {
@@ -180,8 +198,8 @@ void GameState::update(const sf::Time& t_deltaTime)
     bill.playerPos = m_player.pos;
     bill.update(t_deltaTime);
     bill2.update(t_deltaTime);
-    m_context.mapPack.levels[m_context.currentLevelIndex].map.playerPos = m_player.pos;
-    m_context.mapPack.levels[m_context.currentLevelIndex].map.update(t_deltaTime);
+    m_context.mapPack.level.map.playerPos = m_player.pos;
+    m_context.mapPack.level.map.update(t_deltaTime);
 
     m_player.update(t_deltaTime);
 
@@ -200,14 +218,18 @@ void GameState::update(const sf::Time& t_deltaTime)
     {
         m_context.stateMachine.popState();
     }
+
+    m_renderSurface.info.pos = sf::Vector2f(m_cam.pos());
+    m_renderSurface.info.dir = sf::Vector2f(m_cam.direction());
+    m_renderSurface.update(t_deltaTime);
 }
 
 void GameState::display()
 {
-
-    m_renderTexture.update(Raycasting::render(m_cam, m_context.mapPack.levels[m_context.currentLevelIndex].map,
-                           m_context.params.bilinear_filtering, m_context.params.bilinear_sprites).data());
-    m_context.window.draw(m_screenSprite);
+    // m_renderTexture.update(Raycasting::render(m_cam, m_context.mapPack.level.map,
+    //                        m_context.params.bilinear_filtering, m_context.params.bilinear_sprites).data());
+    // m_context.window.draw(m_screenSprite);
+    m_context.window.draw(m_renderSurface);
     m_context.window.draw(hud);
     if (m_context.params.bindings.isActive("minimap"))
     {

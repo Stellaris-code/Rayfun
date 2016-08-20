@@ -24,6 +24,7 @@
 #include "state.hpp"
 #include "states/gamestate.hpp"
 #include "states/menustate.hpp"
+#include "states/introstate.hpp"
 
 namespace Rayfun
 {
@@ -34,6 +35,8 @@ inline std::unique_ptr<State> makeState(StateID t_stateID, State::Context& t_con
     {
         case StateID::Menu:
             return std::unique_ptr<State>(std::make_unique<MenuState>(t_context));
+        case StateID::Intro:
+            return std::unique_ptr<State>(std::make_unique<IntroState>(t_context));
         case StateID::Game:
             return std::unique_ptr<State>(std::make_unique<GameState>(t_context));
     }

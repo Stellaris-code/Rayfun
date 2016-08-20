@@ -46,11 +46,11 @@ class Camera
         double fov() const;
         double angle() const;
 
-        sf::Vector2d plane() const;
-        sf::Vector2d direction() const;
+        const sf::Vector2d& plane() const;
+        const sf::Vector2d& direction() const;
 
-        sf::Vector2d pos() const;
-        sf::Vector2s screenSize() const;
+        const sf::Vector2d& pos() const;
+        const sf::Vector2s& screenSize() const;
 
     private:
         sf::Vector2d m_pos {};

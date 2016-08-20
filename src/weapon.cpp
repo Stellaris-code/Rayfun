@@ -19,7 +19,7 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
-#include "gameplayglobals.hpp"
+#include "utils/gameplayglobals.hpp"
 
 namespace Rayfun
 {

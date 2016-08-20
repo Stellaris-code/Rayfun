@@ -20,6 +20,7 @@
 #include <chaiscript/chaiscript_stdlib.hpp>
 
 #include <SFML/Window/Event.hpp>
+#include <SFML/System/Err.hpp>
 
 #include "constants.hpp"
 #include "loaders/configreader.hpp"
@@ -34,7 +35,7 @@ Application::Application(const sf::VideoMode &t_videoMode, const std::string &t_
                          const std::string& t_pakPath,
                          const sf::ContextSettings &t_contextSettings, unsigned t_fpsCap)
     : m_window(t_videoMode, t_windowName, sf::Style::Default, t_contextSettings),
-      m_imgui(m_window), m_statemachine(m_contextObject),
+      m_imgui(m_window), m_statemachine(m_contextObject, m_window),
       m_scriptEngine(chaiscript::Std_Lib::library()),
       m_timePerFrame(sf::seconds(1.f / t_fpsCap))
 {
@@ -52,11 +53,15 @@ Application::Application(const sf::VideoMode &t_videoMode, const std::string &t_
     m_textureHolder.acquire("hud/minimap/tileset", thor::Resources::fromFile<sf::Texture>("data/hud/minimap_tileset.png"));
     m_textureHolder.acquire("hud/minimap/arrow", thor::Resources::fromFile<sf::Texture>("data/hud/minimap_arrow.png"));
     m_textureHolder.acquire("spritesheets/doom_weapons", thor::Resources::fromFile<sf::Texture>("data/doomWeapons.png"));
+    m_textureHolder.acquire("textures/stone", thor::Resources::fromFile<sf::Texture>("data/greystone.png"));
+    m_textureHolder.acquire("maps/map", thor::Resources::fromFile<sf::Texture>("data/map.png"));
     m_imageHolder.acquire("sprites/pillar", thor::Resources::fromFile<sf::Image>("data/pillar.png"));
     m_imageHolder.acquire("spritesheets/doom_items", thor::Resources::fromFile<sf::Image>("data/doomSpriteSheet.png"));
     m_soundHolder.acquire("weaponclick", thor::Resources::fromFile<sf::SoundBuffer>("data/sound/weaponclick.wav"));
     m_statisticsText.setFont(m_fontHolder["ubuntu_mono"]);
-    m_statisticsText.setColor(sf::Color::White);
+    m_statisticsText.setFillColor(sf::Color::White);
+    m_statisticsText.setOutlineColor(sf::Color::Black);
+    m_statisticsText.setOutlineThickness(0.5);
     m_statisticsText.setPosition(5.f, 5.f);
     m_statisticsText.setCharacterSize(10);
 
@@ -69,12 +74,26 @@ void Application::run()
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while (m_window.isOpen())
     {
-        reloop:
+reloop:
         sf::Time elapsedTime = clock.restart();
         updateStats(elapsedTime);
         timeSinceLastUpdate += elapsedTime;
         do
         {
+            if (m_statemachine.changed())
+            {
+                if (!m_firstScreen)
+                {
+                    m_melting = true;
+                    m_screenMelt.reset(m_statemachine.lastStateFrame());
+                }
+                else
+                {
+                    m_firstScreen = false;
+                }
+                goto reloop;
+            }
+
             timeSinceLastUpdate -= m_timePerFrame;
             processEvents();
             update(m_timePerFrame);
@@ -83,11 +102,6 @@ void Application::run()
             {
                 m_window.close();
                 return;
-            }
-
-            if (m_statemachine.changed())
-            {
-                goto reloop;
             }
         } while (timeSinceLastUpdate > m_timePerFrame);
         render();
@@ -119,14 +133,28 @@ void Application::update(const sf::Time &t_deltatime)
 {
     ImGui::SFML::Update(t_deltatime);
     m_statemachine.top()->update(t_deltatime);
+
+    if (m_melting)
+    {
+        m_screenMelt.update(t_deltatime);
+    }
+
+    if (m_screenMelt.completed())
+    {
+        m_melting = false;
+    }
 }
 
 void Application::render()
 {
     m_window.clear();
     m_statemachine.top()->display();
-    m_window.draw(m_statisticsText);
     ImGui::Render();
+    if (m_melting)
+    {
+        m_window.draw(m_screenMelt);
+    }
+    m_window.draw(m_statisticsText);
     m_window.display();
 }
 

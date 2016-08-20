@@ -749,6 +749,7 @@ ImGuiStyle::ImGuiStyle()
     CurveTessellationTol    = 1.25f;            // Tessellation tolerance. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
 
     Colors[ImGuiCol_Text]                   = ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
+    Colors[ImGuiCol_TextOutline]            = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
     Colors[ImGuiCol_TextDisabled]           = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
     Colors[ImGuiCol_WindowBg]               = ImVec4(0.00f, 0.00f, 0.00f, 0.70f);
     Colors[ImGuiCol_ChildWindowBg]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
@@ -2823,6 +2824,15 @@ static void LogRenderedText(const ImVec2& ref_pos, const char* text, const char*
     }
 }
 
+#define RENDER_OUTLINE(wrap_width)         if (*GetStyleVarFloatAddr(ImGuiStyleVar_TextOutline) > 0) \
+{ \
+    float outline = *GetStyleVarFloatAddr(ImGuiStyleVar_TextOutline); \
+    window->DrawList->AddText(g.Font, g.FontSize, pos+ImVec2(outline, outline), GetColorU32(ImGuiCol_TextOutline), text, text_end, wrap_width); \
+    window->DrawList->AddText(g.Font, g.FontSize, pos+ImVec2(-outline, outline), GetColorU32(ImGuiCol_TextOutline), text, text_end, wrap_width); \
+    window->DrawList->AddText(g.Font, g.FontSize, pos+ImVec2(outline, -outline), GetColorU32(ImGuiCol_TextOutline), text, text_end, wrap_width); \
+    window->DrawList->AddText(g.Font, g.FontSize, pos+ImVec2(-outline, -outline), GetColorU32(ImGuiCol_TextOutline), text, text_end, wrap_width); \
+    }
+
 // Internal ImGui functions to render text
 // RenderText***() functions calls ImDrawList::AddText() calls ImBitmapFont::RenderText()
 void ImGui::RenderText(ImVec2 pos, const char* text, const char* text_end, bool hide_text_after_hash)
@@ -2846,20 +2856,12 @@ void ImGui::RenderText(ImVec2 pos, const char* text, const char* text_end, bool 
     const int text_len = (int)(text_display_end - text);
     if (text_len > 0)
     {
-        window->DrawList->AddText(g.Font, g.FontSize, pos, GetColorU32(ImGuiCol_Text), text, text_display_end);
+        RENDER_OUTLINE(0)
+                window->DrawList->AddText(g.Font, g.FontSize, pos, GetColorU32(ImGuiCol_Text), text, text_display_end);
         if (g.LogEnabled)
             LogRenderedText(pos, text, text_display_end);
     }
 }
-
-#define RENDER_OUTLINE(wrap_width)         if (*GetStyleVarFloatAddr(ImGuiStyleVar_TextOutline) > 0) \
-{ \
-    float outline = *GetStyleVarFloatAddr(ImGuiStyleVar_TextOutline); \
-    window->DrawList->AddText(g.Font, g.FontSize, pos+ImVec2(outline, outline), GetColorU32(ImGuiCol_TextOutline), text, text_end, wrap_width); \
-    window->DrawList->AddText(g.Font, g.FontSize, pos+ImVec2(-outline, outline), GetColorU32(ImGuiCol_TextOutline), text, text_end, wrap_width); \
-    window->DrawList->AddText(g.Font, g.FontSize, pos+ImVec2(outline, -outline), GetColorU32(ImGuiCol_TextOutline), text, text_end, wrap_width); \
-    window->DrawList->AddText(g.Font, g.FontSize, pos+ImVec2(-outline, -outline), GetColorU32(ImGuiCol_TextOutline), text, text_end, wrap_width); \
-    }
 
 void ImGui::RenderTextWrapped(ImVec2 pos, const char* text, const char* text_end, float wrap_width)
 {
@@ -9773,7 +9775,6 @@ void ImGui::ShowMetricsWindow(bool* p_open)
     }
     ImGui::End();
 }
-
 //-----------------------------------------------------------------------------
 
 // Include imgui_user.inl at the end of imgui.cpp to access private data/functions that aren't exposed.
