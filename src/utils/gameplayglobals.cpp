@@ -80,7 +80,7 @@ boost::optional<Actor&> fireBullets(Actor &t_actor, const sf::Vector2d &t_src, c
             auto result = Raycasting::castRay(t_src, Utility::angleToVector(dev.x + thor::polarAngle(t_dir)),
                                               t_map, Raycasting::HitMode::Visibility).back();
 
-            if (result.tileHit && result.tileHit->tex[result.side] != nullptr)
+            if (result.tileHit && result.tileHit->tex[result.side] != 0)
             {
                 if (result.distance > t_maxDistance)
                 {
@@ -92,10 +92,13 @@ boost::optional<Actor&> fireBullets(Actor &t_actor, const sf::Vector2d &t_src, c
                     result.tileHit->decals[result.side] = sf::Image();
                 }
                 auto& decal = *(result.tileHit->decals[result.side]);
-                if (decal.getSize() != result.tileHit->tex[result.side]->getSize())
+
+                // FIXME : again find a way to get texture size by ID !
+
+                if (true /*decal.getSize() != {64, 64 }*/)
                 {
-                    decal.create(result.tileHit->tex[result.side]->getSize().x,
-                            result.tileHit->tex[result.side]->getSize().y, sf::Color::Transparent);
+                    decal.create(64,
+                            64, sf::Color::Transparent);
                 }
 
                 double wallX { 0 };

@@ -39,7 +39,7 @@ struct Tile : public Taggable
 
         Directional<bool> clip { false };
 
-        Directional<std::shared_ptr<sf::Image>> tex {};
+        Directional<unsigned char> tex {}; // texture IDs
 
         Directional<boost::optional<sf::Image>> decals {};
 

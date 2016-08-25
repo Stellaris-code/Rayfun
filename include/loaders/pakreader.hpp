@@ -78,8 +78,6 @@ class PakReader : private sf::NonCopyable
         bool fileToSfLoad(const ZipArchive::Ptr t_archive,
                           const std::string& t_filePath, T& t_sf, bool t_loadInHolder = false) const;
 
-        bool getImage(const std::string& t_filename, sf::Image& t_image, PakContents& t_contents) const;
-
         void loadInfo(const ZipArchive::Ptr t_archive, PakContents& t_contents, size_t t_levelIndex);
         void loadLevel(const ZipArchive::Ptr t_archive, const Json::Value& t_root, PakContents& t_contents);
         void loadTile(const ZipArchive::Ptr, const Json::Value& t_tile, Map& t_map, PakContents& t_contents) const;

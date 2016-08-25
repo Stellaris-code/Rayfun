@@ -18,25 +18,21 @@
 #ifndef GLSLINTEROP_HPP
 #define GLSLINTEROP_HPP
 
-#include <array>
+#include <cstdint>
 
-namespace sf
-{
-class Texture;
-class Image;
-}
+#include <vector>
 
 namespace Rayfun
 {
 
 class Map;
 
-namespace detail
+namespace Utility
 {
-void setTexIndex(std::size_t i, std::size_t j, const std::array<unsigned char, 4>& texIndex, sf::Image& img);
-}
 
-sf::Texture mapToTexture(const Map& t_map);
+std::vector<uint8_t> mapToBuffer(const Map& t_map);
+
+}
 
 }
 

@@ -31,6 +31,7 @@
 #include "utils/graphicsutility.hpp"
 #include "utils/mathutility.hpp"
 #include "utils/gameplayglobals.hpp"
+#include "utils/glslinterop.hpp"
 
 #include "statemachine.hpp"
 
@@ -57,15 +58,7 @@ GameState::GameState(Context &t_context)
 
     m_context.resources.textureHolder["textures/stone"].setSmooth(true);
 
-    std::vector<sf::Image> textures;
-
-    for (const auto& tex : m_context.mapPack.textures)
-    {
-        textures.push_back(tex.second);
-    }
-
-    m_renderSurface.loadTextureArray(textures);
-    m_renderSurface.setMap(m_context.resources.textureHolder["maps/map"]);
+    m_renderSurface.loadTextureArray(m_context.mapPack.textures.toTextureArray());
 
     bill2.addFrame(sf::seconds(0.1f), sf::IntRect(1, 83, 26, 96));
     bill2.addFrame(sf::seconds(0.1f), sf::IntRect(31, 83, 26, 96));
@@ -139,11 +132,6 @@ GameState::GameState(Context &t_context)
     {
         m_player.use();
     });
-
-    bill.ontrigger = [](const Actor&, DrawableActor&)
-    {
-        std::cerr << "dd\n";
-    };
 
     bill2.pos = { 2.5, 2.5 };
     bill2.z = 26;
@@ -221,13 +209,16 @@ void GameState::update(const sf::Time& t_deltaTime)
 
     m_renderSurface.info.pos = sf::Vector2f(m_cam.pos());
     m_renderSurface.info.dir = sf::Vector2f(m_cam.direction());
+    m_renderSurface.setMap(Utility::mapToBuffer(m_context.mapPack.level.map), m_context.mapPack.level.map.size());
     m_renderSurface.update(t_deltaTime);
+        m_screenSprite.setTexture(m_renderTexture);
 }
 
 void GameState::display()
 {
     // m_renderTexture.update(Raycasting::render(m_cam, m_context.mapPack.level.map,
-    //                        m_context.params.bilinear_filtering, m_context.params.bilinear_sprites).data());
+     //                       m_context.params.bilinear_filtering, m_context.params.bilinear_sprites).data());
+    //m_renderTexture =  Utility::mapToTexture(m_context.mapPack.level.map);
     // m_context.window.draw(m_screenSprite);
     m_context.window.draw(m_renderSurface);
     m_context.window.draw(hud);

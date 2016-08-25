@@ -22,6 +22,9 @@ file(GLOB_RECURSE SRC_LIST src/*.cpp)
 find_package(Boost COMPONENTS system program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
+find_package(GLEW REQUIRED)
+include_directories(${GLEW_INCLUDE_DIRS})
+
 find_package(SFML 2 REQUIRED system window graphics audio)
 include_directories(${SFML_INCLUDE_DIR})
 
@@ -40,6 +43,7 @@ target_link_libraries(${PROJECT_NAME} ZipLib)
 target_link_libraries(${PROJECT_NAME} imgui)
 target_link_libraries(${PROJECT_NAME} ${OPENCL_LIBRARY})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${SFML_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${JSONCPP_LIBRARY})
 target_link_libraries(${PROJECT_NAME} ${THOR_LIBRARY})

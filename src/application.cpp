@@ -39,6 +39,8 @@ Application::Application(const sf::VideoMode &t_videoMode, const std::string &t_
       m_scriptEngine(chaiscript::Std_Lib::library()),
       m_timePerFrame(sf::seconds(1.f / t_fpsCap))
 {
+    glewInit();
+
     m_window.setFramerateLimit(t_fpsCap);
     loadConfig();
     loadPak(t_pakPath);

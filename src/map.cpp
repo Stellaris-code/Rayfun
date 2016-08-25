@@ -92,9 +92,9 @@ void Rayfun::Map::update(const sf::Time &t_deltaTime)
             if (tile.sliding)
             {
                 tile.slideProgress += t_deltaTime;
-                Utility::slideImage(*tile.tex[tile.slideSide], tile.slideDirection,
-                        (t_deltaTime / tile.slideSpeed) * (tile.slideDirection == Side::North || tile.slideDirection == Side::South ? tile.tex[tile.slideSide]->getSize().y
-                                                           : tile.tex[tile.slideSide]->getSize().x));
+//                Utility::slideImage(*tile.tex[tile.slideSide], tile.slideDirection,
+//                        (t_deltaTime / tile.slideSpeed) * (tile.slideDirection == Side::North || tile.slideDirection == Side::South ? tile.tex[tile.slideSide]->getSize().y
+//                                                           : tile.tex[tile.slideSide]->getSize().x));
                 if (tile.decals[tile.slideSide])
                 {
                     Utility::slideImage(*tile.decals[tile.slideSide], tile.slideDirection,

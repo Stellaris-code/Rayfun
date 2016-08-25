@@ -22,11 +22,16 @@
 
 #include <SFML/System/Time.hpp>
 
+#include <GL/glew.h>
+#include <SFML/OpenGL.hpp>
+
 #include <SFML/Graphics/Drawable.hpp>
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Shader.hpp>
 #include <SFML/Graphics/Texture.hpp>
+
+#include "common.hpp"
 
 namespace Rayfun
 {
@@ -58,7 +63,7 @@ class ShaderRenderSurface : public sf::Drawable
         void setSize(const sf::Vector2f& t_size);
         void setTexture(const sf::Texture& t_tex);
         void loadTextureArray(const std::vector<sf::Image>& t_textures);
-        void setMap(const sf::Texture& t_map);
+        void setMap(const std::vector<uint8_t> &t_map, const sf::Vector2s &t_size);
 
     public:
         SharedInfo info;
@@ -72,8 +77,12 @@ class ShaderRenderSurface : public sf::Drawable
     private:
         sf::Sprite m_drawSurface;
         sf::Texture m_drawTexture;
+        GLuint m_map_tex;
+        GLuint m_texArray;
+        sf::Vector2s m_mapSize;
         sf::Texture m_textureArray;
         sf::Shader m_renderShader;
+        GLuint m_tbo;
 };
 
 }

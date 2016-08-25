@@ -18,47 +18,34 @@
 
 #include "utils/glslinterop.hpp"
 
-#include <cmath>
-
-#include <SFML/Graphics/Texture.hpp>
-
 #include "map.hpp"
 
 namespace Rayfun
 {
 
-namespace detail
+namespace Utility
 {
 
-void setTexIndex(std::size_t i, std::size_t j, const std::array<unsigned char, 4> &texIndex, sf::Image &img)
+
+std::vector<uint8_t> mapToBuffer(const Map &t_map)
 {
-    sf::Color pixel;
-    pixel.r = texIndex[0];
-    pixel.g = texIndex[1];
-    pixel.b = texIndex[2];
-    pixel.a = texIndex[3];
-
-    img.setPixel(i, j, pixel);
-}
-
-}
-
-sf::Texture mapToTexture(const Map &t_map)
-{
-    sf::Image img;
-    img.create(t_map.size().x, t_map.size().y);
+    std::vector<uint8_t> buffer;
 
     for (size_t i { 0 }; i < t_map.size().x; ++i)
     {
         for (size_t j { 0 }; j < t_map.size().y; ++j)
         {
-            detail::setTexIndex(i, j, {{0, 0, 0, 0}}, img);
+            const auto& tileAt = t_map.tileAt({i, j});
+            buffer.push_back(tileAt.tex[Side::North]);
+            buffer.push_back(tileAt.tex[Side::South]);
+            buffer.push_back(tileAt.tex[Side::East]);
+            buffer.push_back(tileAt.tex[Side::West]);
         }
     }
 
-    sf::Texture tex;
-    tex.loadFromImage(img);
-    return tex;
+    return buffer;
+}
+
 }
 
 }

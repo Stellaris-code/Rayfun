@@ -181,19 +181,6 @@ Json::Value PakReader::fileToJson(const ZipArchive::Ptr t_archive,
     return root;
 }
 
-bool PakReader::getImage(const std::string &t_filename, sf::Image &t_image, PakContents &t_contents) const
-{
-    if (t_contents.textures.find(t_filename) != t_contents.textures.cend())
-    {
-        t_image = t_contents.textures.at(t_filename);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 void PakReader::loadInfo(const ZipArchive::Ptr t_archive, PakContents &t_contents, size_t t_levelIndex)
 {
     Json::Value root = fileToJson(t_archive, c_infoFile);
@@ -252,7 +239,7 @@ void PakReader::loadInfo(const ZipArchive::Ptr t_archive, PakContents &t_content
         {
             sf::Image img;
             fileToSfLoad(t_archive, c_texPrefix + v.asString(), img, true);
-            t_contents.textures[v.asString()] = img;
+            t_contents.textures.addTexture(v.asString(), img);
         }
     }
 
@@ -281,8 +268,8 @@ void PakReader::loadInfo(const ZipArchive::Ptr t_archive, PakContents &t_content
                               + ", max is : " + std::to_string(get(root, "levels").size()) + ")");
     }
 
-        loadLevel(t_archive, fileToJson(t_archive, c_levelPrefix +
-                                        get(root, "levels")[unsigned(t_levelIndex)].asString()), t_contents);
+    loadLevel(t_archive, fileToJson(t_archive, c_levelPrefix +
+                                    get(root, "levels")[unsigned(t_levelIndex)].asString()), t_contents);
 }
 
 void PakReader::loadLevel(const ZipArchive::Ptr t_archive, const Json::Value &t_root, PakContents &t_contents)
@@ -368,14 +355,7 @@ void PakReader::loadTile(const ZipArchive::Ptr, const Json::Value& t_tile, Map& 
     {
         for (auto side : { Side::North, Side::South, Side::East, Side::West })
         {
-            if (!getImage(texNames[side], textures[side], t_contents))
-            {
-                tile.tex[side] = nullptr;
-            }
-            else
-            {
-                tile.tex[side].reset(&m_context.resources.imageHolder[Utility::filenameFromPath(c_texPrefix + texNames[side])]);
-            }
+            tile.tex[side] = t_contents.textures.getId(texNames[side]);
             tile.brigthnessMap[side].resize(textures[side].getSize().x);
             std::fill(tile.brigthnessMap[side].begin(), tile.brigthnessMap[side].end(), 0);
         }
@@ -455,15 +435,18 @@ void PakReader::loadSector(const ZipArchive::Ptr t_archive, const Json::Value& t
     sf::Image blank;
     blank.create(1, 1, sf::Color::White);
 
-    if (!getImage(get(t_sector, "floortex").asString(), sector.floor, t_contents))
-    {
-        throw_pakreader_error(m_currentFile, "cannot open '" + get(t_sector, "floortex").asString() + "' !");
-    }
+    //    if (!getImage(get(t_sector, "floortex").asString(), sector.floor, t_contents))
+    //    {
+    //        throw_pakreader_error(m_currentFile, "cannot open '" + get(t_sector, "floortex").asString() + "' !");
+    //    }
 
-    if (!getImage(get(t_sector, "ceiltex").asString(), sector.ceiling, t_contents))
-    {
-        throw_pakreader_error(m_currentFile, "cannot open '" + get(t_sector, "ceiltex").asString() + "' !");
-    }
+    //    if (!getImage(get(t_sector, "ceiltex").asString(), sector.ceiling, t_contents))
+    //    {
+    //        throw_pakreader_error(m_currentFile, "cannot open '" + get(t_sector, "ceiltex").asString() + "' !");
+    //    }
+
+    sector.floor = t_contents.textures.getId(get(t_sector, "floortex").asString());
+    sector.ceiling = t_contents.textures.getId(get(t_sector, "ceiltex").asString());
 
     t_map.sectors.push_back(sector);
 }

@@ -16,6 +16,8 @@
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
 
+#include <GL/glew.h>
+
 #include "utils/graphicsutility.hpp"
 
 #include <cassert>
@@ -39,6 +41,7 @@
 #include <iostream>
 
 #include "utils/mathutility.hpp"
+#include "glutils.hpp"
 
 #include "common.hpp"
 
@@ -200,25 +203,42 @@ std::vector<sf::Color> imageStripe(const sf::Image &t_image, unsigned t_y)
                                   t_image.getPixelsPtr() + t_image.getSize().x * (t_y + 1) - 1);
 }
 
-void createTextureArray(sf::Texture &t_targetTex, const std::vector<sf::Image> &t_textures)
+void createTextureArray(GLuint t_tex, const std::vector<sf::Image> &t_textures)
 {
     assert(!t_textures.empty());
 
-    glBindTexture(GL_TEXTURE_2D_ARRAY, t_targetTex.getNativeHandle());
+    auto size_x = std::max_element(t_textures.cbegin(), t_textures.cend(),
+                                   [](const sf::Image& a, const sf::Image& b)
+    {
+        return a.getSize().x < b.getSize().x;
+    })->getSize().x;
 
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, t_textures[0].getSize().x, t_textures[0].getSize().y,
-            t_textures.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    auto size_y = std::max_element(t_textures.cbegin(), t_textures.cend(),
+                                   [](const sf::Image& a, const sf::Image& b)
+    {
+        return a.getSize().y < b.getSize().y;
+    })->getSize().y;
+
+    glCheck(glActiveTexture(GL_TEXTURE0 + 31));
+
+    glCheck(glBindTexture(GL_TEXTURE_2D_ARRAY, t_tex));
+
+    glCheck(glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, size_x, size_y, t_textures.size()));
 
     for (size_t i { 0 }; i < t_textures.size(); ++i)
     {
-        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, t_textures[0].getSize().x, t_textures[0].getSize().y,
-                1, GL_RGBA, GL_UNSIGNED_BYTE, t_textures[i].getPixelsPtr());
-
-        glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+        glCheck(glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, t_textures[i].getSize().x, t_textures[i].getSize().y,
+                                1, GL_RGBA, GL_UNSIGNED_BYTE, t_textures[i].getPixelsPtr()));
     }
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+    glCheck(glTexParameterf(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_MIN_FILTER,GL_LINEAR));
+    glCheck(glTexParameterf(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_MAG_FILTER,GL_LINEAR));
+    glCheck(glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE));
+    glCheck(glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE));
+
+    glCheck(glBindTexture(GL_TEXTURE_2D_ARRAY, 0));
 }
 
 }

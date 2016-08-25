@@ -46,7 +46,7 @@ void LightSource::update(const sf::Time &)
             {
                 wallX = 1 - wallX;
             }
-            wallX *= result.tileHit->tex[result.side]->getSize().x;
+            //wallX *= result.tileHit->tex[result.side]->getSize().x;
             result.tileHit->brigthnessMap[result.side][size_t(wallX)] = 255 / result.distance;
         }
     }

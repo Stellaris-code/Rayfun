@@ -22,6 +22,8 @@
 
 #include <vector>
 
+#include <SFML/OpenGL.hpp>
+
 
 namespace sf
 {
@@ -69,7 +71,7 @@ unsigned char getBrigthness(const sf::Color& t_color);
 
 void slideImage(sf::Image& t_image, Side t_direction, size_t t_amount);
 
-void createTextureArray(sf::Texture& t_targetTex, const std::vector<sf::Image>& t_textures);
+void createTextureArray(GLuint t_tex, const std::vector<sf::Image>& t_textures);
 
 }
 }

@@ -66,7 +66,7 @@ void Player::move(double t_amount)
 
     DrawableActor* act = nullptr;
 
-    if (result.front().tileHit && ((sf::Vector2s(pos) == sf::Vector2s(newPos) ||
+    if (!result.front().tileHit || ((sf::Vector2s(pos) == sf::Vector2s(newPos) ||
          (!result.front().tileHit->clip[result.front().side] ||
           !m_context.mapPack.level.map.tileAt(sf::Vector2s(newPos)).clip[result.front().side]) ||
          !m_context.mapPack.level.map.tileAt(sf::Vector2s(newPos)).isWall) &&
@@ -85,7 +85,7 @@ void Player::strafe(double t_amount)
 
     DrawableActor* act = nullptr;
 
-    if (result.front().tileHit && ((sf::Vector2s(pos) == sf::Vector2s(newPos) ||
+    if (!result.front().tileHit || ((sf::Vector2s(pos) == sf::Vector2s(newPos) ||
          (!result.front().tileHit->clip[result.front().side] ||
           !m_context.mapPack.level.map.tileAt(sf::Vector2s(newPos)).clip[result.front().side]) ||
          !m_context.mapPack.level.map.tileAt(sf::Vector2s(newPos)).isWall) &&

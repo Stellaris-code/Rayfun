@@ -29,12 +29,12 @@ namespace Rayfun
 struct Sector : public Taggable
 {
         Sector() = default;
-        Sector(sf::Rect<size_t> t_rect, sf::Image t_floor, sf::Image t_ceil)
+        Sector(sf::Rect<size_t> t_rect, unsigned char t_floor, unsigned char t_ceil)
             : rect(t_rect), floor(t_floor), ceiling(t_ceil)
         {}
         sf::Rect<size_t> rect;
-        sf::Image floor;
-        sf::Image ceiling;
+        unsigned char floor;
+        unsigned char ceiling;
 };
 
 } // namespace Rayfun

@@ -24,6 +24,8 @@
 
 #include <chaiscript/chaiscript.hpp>
 
+#include <GL/glew.h>
+
 #include <SFML/System/Time.hpp>
 
 #include <SFML/Graphics/RenderWindow.hpp>

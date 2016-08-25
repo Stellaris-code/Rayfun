@@ -20,7 +20,6 @@
 
 #include <string>
 #include <vector>
-#include <map.hpp>
 
 #include <SFML/Audio/Music.hpp>
 
@@ -31,6 +30,7 @@
 
 #include "level.hpp"
 #include "weaponstructure.hpp"
+#include "texturecontainer.hpp"
 
 namespace Rayfun
 {
@@ -45,7 +45,7 @@ struct PakContents
     sf::Music menuMusic;
     Level level;
     std::vector<WeaponStructure> weapons;
-    std::map<std::string, sf::Image> textures;
+    TextureContainer textures;
 };
 
 } // namespace Rayfun
