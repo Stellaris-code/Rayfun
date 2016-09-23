@@ -59,7 +59,6 @@ void IntroState::handleEvent(const sf::Event &)
 
 void IntroState::update(const sf::Time &)
 {
-
 }
 
 void IntroState::display()
@@ -78,10 +77,10 @@ void IntroState::drawImgui()
     ImGui::SetNextWindowContentSize(ImVec2(m_context.window.getSize().x, (m_context.window.getSize().y)));
 
     ImGui::Begin(m_context.mapPack.level.name.c_str(),
-            nullptr, ImVec2(0, 0), 0,
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-            ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar |
-            ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoScrollWithMouse);
+                 nullptr, ImVec2(0, 0), 0,
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar |
+                 ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoScrollWithMouse);
     ImGui::SetWindowFontScale(0.5);
 
     ImGui::TextWrapped("%s", m_context.mapPack.level.beginMessage.c_str());

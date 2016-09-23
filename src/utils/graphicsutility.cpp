@@ -237,8 +237,6 @@ void createTextureArray(GLuint t_tex, const std::vector<sf::Image> &t_textures)
     glCheck(glTexParameterf(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_MAG_FILTER,GL_LINEAR));
     glCheck(glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE));
     glCheck(glTexParameteri(GL_TEXTURE_2D_ARRAY,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE));
-
-    glCheck(glBindTexture(GL_TEXTURE_2D_ARRAY, 0));
 }
 
 }

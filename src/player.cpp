@@ -41,6 +41,15 @@ void Player::update(const sf::Time& t_deltaTime)
     {
         wep.update(t_deltaTime);
     }
+
+    if (!m_moved)
+    {
+        m_deltaPos = { 0, 0 };
+    }
+    else
+    {
+        m_moved = false;
+    }
 }
 
 void Player::firePrimary()
@@ -74,6 +83,7 @@ void Player::move(double t_amount)
     {
         m_deltaPos = newPos - pos;
         pos = newPos;
+        m_moved = true;
     }
 }
 
@@ -93,6 +103,7 @@ void Player::strafe(double t_amount)
     {
         m_deltaPos = newPos - pos;
         pos = newPos;
+        m_moved = true;
     }
 }
 

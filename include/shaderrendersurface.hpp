@@ -28,8 +28,8 @@
 #include <SFML/Graphics/Drawable.hpp>
 
 #include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Shader.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Shader.hpp>
 
 #include "common.hpp"
 
@@ -56,7 +56,8 @@ class ShaderRenderSurface : public sf::Drawable
         };
 
     public:
-        ShaderRenderSurface(const sf::Vector2f& t_size);
+        ShaderRenderSurface(const sf::Vector2f& t_size, const sf::Vector2f &t_mapSize);
+        virtual ~ShaderRenderSurface();
 
     public:
         void update(const sf::Time&);
@@ -79,7 +80,6 @@ class ShaderRenderSurface : public sf::Drawable
         sf::Texture m_drawTexture;
         GLuint m_map_tex;
         GLuint m_texArray;
-        sf::Vector2s m_mapSize;
         sf::Texture m_textureArray;
         sf::Shader m_renderShader;
         GLuint m_tbo;

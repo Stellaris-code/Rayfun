@@ -45,6 +45,7 @@ class GameState : public State
 {
     public:
         explicit GameState(State::Context& t_context);
+        ~GameState();
 
     public:
         virtual void pause() override;
@@ -64,6 +65,10 @@ class GameState : public State
         const Level& currentLevel() const { return m_context.mapPack.level; }
 
     private:
+        void initCvars();
+        bool mouseOutsideBounds(sf::Vector2f pos);
+
+    private:
         Player m_player;
         Camera m_cam;
         sf::Time m_lastDeltaTime { sf::Time::Zero };
@@ -74,6 +79,7 @@ class GameState : public State
         size_t m_currentLevel { 0 };
         static bool m_chaiInitialized;
         ShaderRenderSurface m_renderSurface;
+        int m_lastMouseX { -1 };
 
         // debug
 

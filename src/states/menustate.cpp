@@ -30,6 +30,7 @@
 #include "pakcontents.hpp"
 #include "statemachine.hpp"
 #include "constants.hpp"
+#include "logger.hpp"
 
 namespace Rayfun
 {
@@ -102,14 +103,7 @@ void MenuState::loadMenuFile()
 
 void MenuState::loadLevel()
 {
-    if (m_context.mapPack.level.intro)
-    {
-        m_context.stateMachine.pushState(StateID::Intro);
-    }
-    else
-    {
-        m_context.stateMachine.pushState(StateID::Game);
-    }
+    m_context.stateMachine.pushState(StateID::Intro);
 }
 
 }

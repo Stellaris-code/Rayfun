@@ -18,10 +18,37 @@
 
 #include "application.hpp"
 
+#include "cmake/config.hpp"
+
+#ifdef FLTK_FOUND
+
+#include <FL/fl_message.H>
+
+#elif defined(SDL2_FOUND)
+
+#include <SDL2/SDL_messagebox.h>
+
+#endif
+
 int main(int argc, char *argv[])
 {
-    Rayfun::Application app(sf::VideoMode(1000, 720), "Hey", "testPack.zip", sf::ContextSettings(0, 0, 4), 144);
-    app.run();
+    try
+    {
+        Rayfun::Application app(sf::VideoMode(1000, 720), "Hey", "testPack.zip", sf::ContextSettings(0, 0, 4), 144);
+
+        app.run();
+    }
+    catch (const std::exception& e)
+    {
+#ifdef FLTK_FOUND
+        fl_alert("%s", e.what());
+#elif defined(SDL2_FOUND)
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", e.what(), nullptr);
+#else
+        std::cerr << e.what() << "\n";
+#endif
+        return 1;
+    }
 
     return 0;
 }

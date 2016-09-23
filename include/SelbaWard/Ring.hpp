@@ -48,7 +48,7 @@ public:
     void setHole(float hole);
     float getHole() const;
     void setNumberOfSides(unsigned int numberOfSides);
-    size_t getNumberOfSides() const;
+    std::size_t getNumberOfSides() const;
     void setColor(sf::Color color);
     sf::Color getColor() const;
     void setTexture(const sf::Texture& texture, bool resetRect = false);

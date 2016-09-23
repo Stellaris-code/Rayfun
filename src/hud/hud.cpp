@@ -30,7 +30,6 @@ HUD::HUD(const Resources &t_res) :
     m_res(t_res)
 {
     m_lifeArmor.setFont(t_res.fontHolder["doom"]);
-    //m_lifeArmor.setColor(sf::Color::Red);
     m_lifeArmor.setCharacterSize(15);
     m_lifeArmor.setString("Life : 100\nArmor : 100");
 
@@ -64,23 +63,29 @@ void HUD::setPlayerInfo(const HUD::PlayerInfo &t_plyInfo)
     }
     m_ammoList.setString(ammoStr);
 }
-
-void HUD::updateBob(double t_amount)
+void HUD::updateBob()
 {
-    if (t_amount == 0)
-    {
-        updatePos();
-    }
-    else
-    {
-        m_weapon->move((sin(m_runningTime + t_amount) - sin(m_runningTime)) * 100, 0);
-    }
-    m_runningTime += t_amount;
+    m_weapon->setPosition(m_weaponBasePos.x + sin(m_runningTime * M_PI * 20 * m_lastMoveSpeed) * 75, m_weaponBasePos.y);
 }
 
 void HUD::update(sf::Time t_deltaTime)
 {
-    updateBob(t_deltaTime.asSeconds() * moveSpeed);
+    if (std::abs(moveSpeed) > 0)
+    {
+        m_lastMoveSpeed = moveSpeed;
+    }
+
+    if (std::abs(moveSpeed) > 0 || std::abs(sin(m_runningTime * M_PI * 20 * m_lastMoveSpeed)) > 0
+            + 0.1)
+    {
+        m_runningTime += t_deltaTime.asSeconds();
+    }
+    else
+    {
+        m_runningTime = 0;
+        m_lastMoveSpeed = 0;
+    }
+    updateBob();
 }
 
 void HUD::draw(sf::RenderTarget &t_target, sf::RenderStates t_states) const
@@ -98,7 +103,7 @@ void HUD::updatePos()
 {
     if (m_weapon)
     {
-        m_weapon->setPosition(size().x / 2, 0);
+        m_weaponBasePos = { size().x / 2, 0 };
     }
     m_lifeArmor.setPosition(size().x / 100, size().y - m_lifeArmor.getLocalBounds().height - size().y / 100);
     m_ammoList.setPosition(size().x - m_ammoList.getLocalBounds().width - size().x / 100,

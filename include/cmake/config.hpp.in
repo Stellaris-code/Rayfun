@@ -1,0 +1,9 @@
+#ifndef CONFIG_HPP_IN
+#define CONFIG_HPP_IN
+
+#cmakedefine MSGBOX
+#cmakedefine USE_SDL2_FOR_MSGBOX
+#cmakedefine FLTK_FOUND
+#cmakedefine SDL2_FOUND
+
+#endif

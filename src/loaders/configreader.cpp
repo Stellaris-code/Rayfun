@@ -46,6 +46,8 @@ Parameters Config::parseIntoParameters(const std::string& t_path)
     Json::Value root = Utility::fileToJsonTree(t_path);
     Parameters params;
     params.fov = get(root, "fov").asUInt();
+    params.mouselook = get(root, "mouselook").asBool();
+    params.mouseSensitivity = get(root, "mouse_sensitivity").asDouble();
     params.bilinear_filtering = get(root, "bilinear_filtering").asBool();
     params.bilinear_sprites = get(root, "bilinear_sprites").asBool();
 

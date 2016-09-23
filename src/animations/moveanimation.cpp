@@ -1,4 +1,4 @@
-/*  parameters %{Cpp:License:ClassName} - Yann BOUCHER (yann) 08/05/2016
+/*  src/animations/moveanimation.cpp MoveAnimation - Yann BOUCHER (yann) 31/08/2016
 **
 **
 **            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -15,28 +15,9 @@
 **
 **  0. You just DO WHAT THE FUCK YOU WANT TO.
 */
-#ifndef PARAMETERS_HPP
-#define PARAMETERS_HPP
-
-#include <SFML/System/Vector2.hpp>
-
-#include <Thor/Input/ActionMap.hpp>
-
-#include "common.hpp"
+#include "animations/moveanimation.hpp"
 
 namespace Rayfun
 {
 
-struct Parameters
-{
-        double fov { 90 };
-        thor::ActionMap<std::string> bindings;
-        bool mouselook = true;
-        double mouseSensitivity = 1.0;
-        bool bilinear_filtering = false;
-        bool bilinear_sprites = false;
-};
-
-} // namespace Rayfun
-
-#endif // PARAMETERS_HPP
+}

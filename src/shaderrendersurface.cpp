@@ -17,20 +17,21 @@
 */
 #include "shaderrendersurface.hpp"
 
+#include <cstring> // for memcpy
+
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Window/Context.hpp>
 
 #include "utils/graphicsutility.hpp"
 #include "glutils.hpp"
 
 #include "constants.hpp"
 
-#include <iostream>
-
 namespace Rayfun
 {
 
-ShaderRenderSurface::ShaderRenderSurface(const sf::Vector2f &t_size)
+ShaderRenderSurface::ShaderRenderSurface(const sf::Vector2f &t_size, const sf::Vector2f& t_mapSize)
 {
     if (!sf::Shader::isAvailable())
     {
@@ -48,10 +49,25 @@ ShaderRenderSurface::ShaderRenderSurface(const sf::Vector2f &t_size)
 
     glCheck(glGenTextures(1, &m_texArray));
 
+    glCheck(glGenBuffers(1, &m_tbo));
+    glBindBuffer(GL_TEXTURE_BUFFER, m_tbo);
+    glBufferData(GL_TEXTURE_BUFFER, t_mapSize.x * t_mapSize.y * sizeof(uint8_t) * 4, nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_TEXTURE_BUFFER, 0);
+
+    glActiveTexture(GL_TEXTURE0 + 30);
+    glCheck(glGenTextures(1, &m_map_tex));
+    glCheck(glBindTexture(GL_TEXTURE_BUFFER, m_map_tex));
+    glCheck(glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA8UI, m_tbo));
+    glCheck(glBindTexture(GL_TEXTURE_BUFFER, 0));
+
     sf::Shader::bind(&m_renderShader);
+}
 
-    glCheck(glUniform1i(glGetUniformLocation(m_renderShader.getNativeHandle(), "u_textures"), 31));
-
+ShaderRenderSurface::~ShaderRenderSurface()
+{
+    glCheck(glDeleteTextures(1, &m_texArray));
+    glCheck(glDeleteBuffers(1, &m_tbo));
+    glCheck(glDeleteTextures(1, &m_map_tex));
 }
 
 void ShaderRenderSurface::update(const sf::Time &)
@@ -66,46 +82,39 @@ void ShaderRenderSurface::setSize(const sf::Vector2f &t_size)
 
 void ShaderRenderSurface::loadTextureArray(const std::vector<sf::Image> &t_textures)
 {
-    sf::Shader::bind(&m_renderShader);
-
     Utility::createTextureArray(m_texArray, t_textures);
 
-    glCheck(glActiveTexture(GL_TEXTURE0));
+    glCheck(glUniform1i(glGetUniformLocation(m_renderShader.getNativeHandle(), "u_textures"), 31));
 }
 
 void ShaderRenderSurface::setMap(const std::vector<uint8_t> &t_map, const sf::Vector2s& t_size)
 {
-    glCheck(glGenBuffers(1, &m_tbo));
-
-    glCheck(glBindBuffer(GL_TEXTURE_BUFFER, m_tbo));
-
-    glCheck(glBufferData(GL_TEXTURE_BUFFER, t_map.size() * sizeof(uint8_t), t_map.data(), GL_STATIC_DRAW));
-
-
-    m_mapSize = t_size;
-
-    glCheck(glGenTextures(1, &m_map_tex));
-
-    glCheck(glActiveTexture(GL_TEXTURE2));
-
-    glCheck(glBindTexture(GL_TEXTURE_BUFFER, m_map_tex));
-
-    glCheck(glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA8UI, m_tbo));
-
     GLuint u_map_loc = glGetUniformLocation(m_renderShader.getNativeHandle(), "u_map");
 
-    glUseProgram(m_renderShader.getNativeHandle());
-
-    glCheck(glUniform1i(u_map_loc, 2));
     m_renderShader.setUniform("u_mapSize", sf::Vector2i(t_size));
 
+    glActiveTexture(GL_TEXTURE0 + 30);
 
-    glCheck(glDeleteBuffers(1, &m_tbo));
-    glCheck(glDeleteTextures(1, &m_map_tex));
+    glBindBuffer(GL_TEXTURE_BUFFER, m_tbo);
+    glBufferSubData(GL_TEXTURE_BUFFER, 0, t_map.size(), t_map.data());
+
+
+    std::vector<uint8_t> data;
+    data.resize(t_map.size());
+
+    glGetBufferSubData(GL_TEXTURE_BUFFER, 0, data.size(), data.data());
+
+    glUniform1i(u_map_loc, 30);
 }
 
 void ShaderRenderSurface::draw(sf::RenderTarget &t_target, sf::RenderStates t_states) const
 {
+    glActiveTexture(GL_TEXTURE0 + 31);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_texArray);
+
+    glActiveTexture(GL_TEXTURE0 + 30);
+    glBindTexture(GL_TEXTURE_BUFFER, m_map_tex);
+
     t_states.shader = &m_renderShader;
     t_target.draw(m_drawSurface, t_states);
 }

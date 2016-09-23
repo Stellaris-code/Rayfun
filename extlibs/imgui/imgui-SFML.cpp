@@ -148,7 +148,10 @@ void Update(sf::Time dt)
     ImGuiIO& io = ImGui::GetIO();
     io.DisplaySize = getDisplaySize();
     io.DeltaTime = dt.asSeconds();
-    s_window->setMouseCursorVisible(!io.MouseDrawCursor); // don't draw mouse cursor if ImGui draws it
+    if (io.MouseDrawCursor)
+    {
+        s_window->setMouseCursorVisible(false); // don't draw mouse cursor if ImGui draws it
+    }
 
     // update mouse
     assert(s_window);

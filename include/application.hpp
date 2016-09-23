@@ -51,6 +51,8 @@
 #include "pakcontents.hpp"
 #include "screenmelt.hpp"
 #include "imgui-wrapper.hpp"
+#include "logger.hpp"
+#include "hud/console.hpp"
 
 namespace Rayfun
 {
@@ -85,6 +87,7 @@ class Application : private sf::NonCopyable
 
     private:
         void initChai();
+        void initCommands();
         void loadConfig();
         void loadBindings();
         void loadPak(const std::string& t_path);
@@ -94,6 +97,8 @@ class Application : private sf::NonCopyable
         {
             { "fire", thor::Action::PressOnce},
             { "use", thor::Action::PressOnce},
+            { "toggleconsole", thor::Action::PressOnce},
+            { "quit", thor::Action::PressOnce},
             { "minimap", thor::Action::Hold},
             { "moveforward", thor::Action::Hold},
             { "movebackward", thor::Action::Hold},
@@ -124,13 +129,18 @@ class Application : private sf::NonCopyable
 
         PakContents m_pakContents;
 
+        Logger m_logger;
+
         Resources m_resourcesObject { m_textureHolder, m_imageHolder, m_fontHolder,
                     m_bitmapFontHolder, m_soundHolder };
 
         State::Context m_contextObject { m_window, m_statemachine,
                     m_resourcesObject,
                     m_scriptEngine,
-                    m_pakContents, m_params};
+                    m_pakContents, m_params,
+                    m_logger};
+
+        Console m_console { m_logger };
 
         sf::Text m_statisticsText {};
         sf::Time m_statisticsUpdateTime {};

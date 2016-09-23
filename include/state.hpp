@@ -42,6 +42,7 @@ struct PakContents;
 class Parameters;
 class Resources;
 class StateMachine;
+class Logger;
 
 class State : private sf::NonCopyable
 {
@@ -54,7 +55,7 @@ class State : private sf::NonCopyable
                 chaiscript::ChaiScript& scriptEngine;
                 PakContents& mapPack;
                 Parameters& params;
-                size_t currentLevelIndex { 0 };
+                Logger& logger;
         };
 
     public:

@@ -33,7 +33,7 @@
 #ifndef SELBAWARD_TILEMAP_HPP
 #define SELBAWARD_TILEMAP_HPP
 
-#include "Common.hpp"
+#include "SelbaWard/Common.hpp"
 
 #include <SFML/Graphics/RenderTexture.hpp>
 
@@ -44,45 +44,45 @@ namespace selbaward
 class TileMap : public sf::Drawable, public sf::Transformable
 {
 public:
-	TileMap();
-	void setSize(sf::Vector2f size);
-	sf::Vector2f getSize() const;
-	void setGridSize(sf::Vector2u gridSize);
-	sf::Vector2u getGridSize() const;
-	unsigned int getTotalGridSize() const;
-	void setOutOfBoundsTile(unsigned long int textureTileIndex);
-	void setTexture(const sf::Texture& texture);
-	void setTexture();
-	void setNumberOfTextureTilesPerRow(unsigned int numberOfTextureTilesPerRow);
-	void setTextureOffset(sf::Vector2u textureOffset);
-	void setTextureTileSize(sf::Vector2u textureTileSize);
-	sf::Vector2u getTextureTileSize() const;
-	void setSmooth(bool smooth);
-	bool getSmooth() const;
-	void setSmoothScroll(bool smoothScroll);
-	bool getSmoothScroll() const;
-	void setCameraTargetTile(sf::Vector2f cameraTargetTile);
-	sf::Vector2f getCameraTargetTile() const;
-	void setCamera(sf::Vector2f camera);
-	sf::Vector2f getCamera() const;
-	void setColor(sf::Color color);
-	sf::Color getColor() const;
-	sf::Vector2i getLevelPositionAtCoord(sf::Vector2f coord) const;
-	unsigned long int getTileAtCoord(sf::Vector2f coord) const;
-	sf::Vector2f getCoordAtLevelGridPosition(sf::Vector2f levelGridPosition) const; // takes a float vector so the parameter can specify different parts of that tile e.g. (2.5, 1.5) = centre of tile (2, 1)
-	sf::Vector2f getTileSize() const; // display size of a tile before any transformations
+    TileMap();
+    void setSize(sf::Vector2f size);
+    sf::Vector2f getSize() const;
+    void setGridSize(sf::Vector2u gridSize);
+    sf::Vector2u getGridSize() const;
+    unsigned int getTotalGridSize() const;
+    void setOutOfBoundsTile(unsigned long int textureTileIndex);
+    void setTexture(const sf::Texture& texture);
+    void setTexture();
+    void setNumberOfTextureTilesPerRow(unsigned int numberOfTextureTilesPerRow);
+    void setTextureOffset(sf::Vector2u textureOffset);
+    void setTextureTileSize(sf::Vector2u textureTileSize);
+    sf::Vector2u getTextureTileSize() const;
+    void setSmooth(bool smooth);
+    bool getSmooth() const;
+    void setSmoothScroll(bool smoothScroll);
+    bool getSmoothScroll() const;
+    void setCameraTargetTile(sf::Vector2f cameraTargetTile);
+    sf::Vector2f getCameraTargetTile() const;
+    void setCamera(sf::Vector2f camera);
+    sf::Vector2f getCamera() const;
+    void setColor(sf::Color color);
+    sf::Color getColor() const;
+    sf::Vector2i getLevelPositionAtCoord(sf::Vector2f coord) const;
+    unsigned long int getTileAtCoord(sf::Vector2f coord) const;
+    sf::Vector2f getCoordAtLevelGridPosition(sf::Vector2f levelGridPosition) const; // takes a float vector so the parameter can specify different parts of that tile e.g. (2.5, 1.5) = centre of tile (2, 1)
+    sf::Vector2f getTileSize() const; // display size of a tile before any transformations
 
-	void redraw();
+    void redraw();
 
-	template <class T>
-	void update(const T& level, unsigned int width, sf::Vector2f camera); // level can be any const stl container with random access using indices (std::array/std::vector/std::deque) containing any integer type
-	template <class T>
-	void update(const T& level, unsigned int width); // level can be any const stl container with random access using indices (std::array/std::vector/std::deque) containing any integer type
+    template <class T>
+    void update(const T& level, unsigned int width, sf::Vector2f camera); // level can be any const stl container with random access using indices (std::array/std::vector/std::deque) containing any integer type
+    template <class T>
+    void update(const T& level, unsigned int width); // level can be any const stl container with random access using indices (std::array/std::vector/std::deque) containing any integer type
 
-	template <class T>
-	void update(const T* const level, unsigned int size, unsigned int width, sf::Vector2f camera); // level can be a pointer to any integer type
-	template <class T>
-	void update(const T* const level, unsigned int size, unsigned int width); // level can be a pointer to any integer type
+    template <class T>
+    void update(const T* const level, unsigned int size, unsigned int width, sf::Vector2f camera); // level can be a pointer to any integer type
+    template <class T>
+    void update(const T* const level, unsigned int size, unsigned int width); // level can be a pointer to any integer type
 
 
 
@@ -93,55 +93,55 @@ public:
 
 
 private:
-	struct ActionFlags
-	{
-		bool scrollSmoothly{ false };
-	};
+    struct ActionFlags
+    {
+        bool scrollSmoothly{ false };
+    };
 
-	struct StateFlags
-	{
-		bool smooth{ false };
-	};
+    struct StateFlags
+    {
+        bool smooth{ false };
+    };
 
-	// flags
-	ActionFlags m_do;
-	StateFlags m_is;
+    // flags
+    ActionFlags m_do;
+    StateFlags m_is;
 
-	// data
-	sf::Vector2u m_gridSize;
-	std::vector<unsigned long int> m_grid;
-	unsigned long int m_outOfBoundsTile;
+    // data
+    sf::Vector2u m_gridSize;
+    std::vector<unsigned long int> m_grid;
+    unsigned long int m_outOfBoundsTile;
 
-	// camera (in tiles)
-	sf::Vector2f m_camera;
-	sf::Vector2f m_cameraTarget;
+    // camera (in tiles)
+    sf::Vector2f m_camera;
+    sf::Vector2f m_cameraTarget;
 
-	// color
-	sf::Color m_color;
+    // color
+    sf::Color m_color;
 
-	// tiles
-	sf::PrimitiveType m_primitiveType;
-	sf::Vector2f m_size;
-	const sf::Texture* m_texture;
-	unsigned int m_numberOfTextureTilesPerRow;
-	sf::Vector2u m_textureOffset;
-	sf::Vector2u m_textureTileSize;
-	mutable std::vector<sf::Vertex> m_vertices;
+    // tiles
+    sf::PrimitiveType m_primitiveType;
+    sf::Vector2f m_size;
+    const sf::Texture* m_texture;
+    unsigned int m_numberOfTextureTilesPerRow;
+    sf::Vector2u m_textureOffset;
+    sf::Vector2u m_textureTileSize;
+    mutable std::vector<sf::Vertex> m_vertices;
 
-	// render
-	mutable bool m_redrawRequired;
-	mutable sf::RenderTexture m_renderTexture;
-	mutable std::vector<sf::Vertex> m_render;
+    // render
+    mutable bool m_redrawRequired;
+    mutable sf::RenderTexture m_renderTexture;
+    mutable std::vector<sf::Vertex> m_render;
 
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-	void priv_updateVertices() const;
-	void priv_updateRender() const;
-	void priv_recreateRenderTexture();
-	sf::Vector2i priv_getGridPositionAtCoord(sf::Vector2f coord) const;
-	unsigned int priv_getTileAtGridPosition(sf::Vector2i gridPosition) const;
-	sf::Vector2f priv_getActualCamera() const;
-	sf::Vector2f priv_getTileOffsetFromVector(sf::Vector2f vector) const;
-	sf::Vector2f priv_getVectorFromTileOffset(sf::Vector2f offset) const;
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    void priv_updateVertices() const;
+    void priv_updateRender() const;
+    void priv_recreateRenderTexture();
+    sf::Vector2i priv_getGridPositionAtCoord(sf::Vector2f coord) const;
+    unsigned int priv_getTileAtGridPosition(sf::Vector2i gridPosition) const;
+    sf::Vector2f priv_getActualCamera() const;
+    sf::Vector2f priv_getTileOffsetFromVector(sf::Vector2f vector) const;
+    sf::Vector2f priv_getVectorFromTileOffset(sf::Vector2f offset) const;
 };
 
 } // namespace selbaward

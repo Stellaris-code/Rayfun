@@ -31,9 +31,9 @@ std::vector<uint8_t> mapToBuffer(const Map &t_map)
 {
     std::vector<uint8_t> buffer;
 
-    for (size_t i { 0 }; i < t_map.size().x; ++i)
+    for (size_t j { 0 }; j < t_map.size().y; ++j)
     {
-        for (size_t j { 0 }; j < t_map.size().y; ++j)
+        for (size_t i { 0 }; i < t_map.size().x; ++i)
         {
             const auto& tileAt = t_map.tileAt({i, j});
             buffer.push_back(tileAt.tex[Side::North]);

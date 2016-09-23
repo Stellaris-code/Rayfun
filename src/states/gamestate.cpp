@@ -34,6 +34,8 @@
 #include "utils/glslinterop.hpp"
 
 #include "statemachine.hpp"
+#include "logger.hpp"
+#include "hud/console.hpp"
 
 #include <iostream>
 #include <Thor/Math.hpp>
@@ -46,10 +48,15 @@ GameState::GameState(Context &t_context)
                               t_context.params.fov, 0), m_screenSprite(m_renderTexture),
       m_player(m_context),
       m_minimap(m_context.mapPack.level.map, m_context.resources, sf::Vector2f(m_context.window.getSize())),
-      m_renderSurface(sf::Vector2f(m_context.window.getSize())),
+      m_renderSurface(sf::Vector2f(m_context.window.getSize()), sf::Vector2f(m_context.mapPack.level.map.size())),
       bill(m_context), bill2(m_context),
       hud(m_context.resources)
 {
+    initCvars();
+
+    m_context.window.setMouseCursorGrabbed(true);
+    m_context.window.setMouseCursorVisible(false);
+
     m_renderTexture.create(sf::Vector2u(m_cam.screenSize()).x, sf::Vector2u(m_cam.screenSize()).y);
     bill2.setSpriteSheet(m_context.resources.imageHolder["spritesheets/doom_items"]);
     m_screenSprite.setTexture(m_renderTexture, true);
@@ -139,6 +146,12 @@ GameState::GameState(Context &t_context)
     m_player.pos = { 1.5, 1.5 };
 }
 
+GameState::~GameState()
+{
+    m_context.window.setMouseCursorGrabbed(false);
+    m_context.window.setMouseCursorVisible(true);
+}
+
 void GameState::pause()
 {
 
@@ -149,11 +162,51 @@ void GameState::resume()
 
 }
 
+void GameState::initCvars()
+{
+    if (m_context.logger.console())
+    {
+
+    }
+}
+
+bool GameState::mouseOutsideBounds(sf::Vector2f pos)
+{
+    return pos.x < 1 || pos.x >= m_context.window.getSize().x - 1 ||
+            pos.y < 1 || pos.y >= m_context.window.getSize().y - 1;
+}
+
 void GameState::handleEvent(const sf::Event& t_event)
 {
     if (t_event.type == sf::Event::Resized)
     {
         m_renderSurface.setSize(sf::Vector2f(m_context.window.getSize()));
+    }
+    else if (t_event.type == sf::Event::MouseMoved)
+    {
+        if (m_context.params.mouselook)
+        {
+            if (!mouseOutsideBounds(sf::Vector2f(t_event.mouseMove.x, t_event.mouseMove.y)))
+            {
+                if (m_lastMouseX >= 0) // do not mouselook if no last mouse pos exists
+                {
+                    m_player.turn(0.2 * m_context.params.mouseSensitivity * (t_event.mouseMove.x - m_lastMouseX));
+                }
+                m_lastMouseX = t_event.mouseMove.x;
+            }
+            else
+            {
+                sf::Mouse::setPosition(
+                            sf::Vector2i(m_context.window.getSize().x / 2, m_context.window.getSize().y / 2)
+                            ); // recenter mouse to create illusion of abscence of borders
+
+                m_lastMouseX = -1;
+            }
+        }
+    }
+    else if (t_event.type == sf::Event::LostFocus)
+    {
+        m_lastMouseX = -1; // reset mouselook
     }
 }
 
@@ -192,7 +245,7 @@ void GameState::update(const sf::Time& t_deltaTime)
     m_player.update(t_deltaTime);
 
     hud.setPlayerInfo({ m_player.health, m_player.armor, m_player.ammo_map()});
-    //hud.moveSpeed = m_player.movementAmount();
+    hud.moveSpeed = m_player.movementAmount();
     hud.update(t_deltaTime);
 
     m_cam.setPos(m_player.pos);
@@ -202,24 +255,15 @@ void GameState::update(const sf::Time& t_deltaTime)
     m_minimap.playerAngle = static_cast<float>(m_player.angle + 90);
     m_minimap.update(t_deltaTime);
 
-    if (m_context.params.bindings.isActive("strafeleft"))
-    {
-        m_context.stateMachine.popState();
-    }
-
     m_renderSurface.info.pos = sf::Vector2f(m_cam.pos());
     m_renderSurface.info.dir = sf::Vector2f(m_cam.direction());
     m_renderSurface.setMap(Utility::mapToBuffer(m_context.mapPack.level.map), m_context.mapPack.level.map.size());
     m_renderSurface.update(t_deltaTime);
-        m_screenSprite.setTexture(m_renderTexture);
+    m_screenSprite.setTexture(m_renderTexture);
 }
 
 void GameState::display()
 {
-    // m_renderTexture.update(Raycasting::render(m_cam, m_context.mapPack.level.map,
-     //                       m_context.params.bilinear_filtering, m_context.params.bilinear_sprites).data());
-    //m_renderTexture =  Utility::mapToTexture(m_context.mapPack.level.map);
-    // m_context.window.draw(m_screenSprite);
     m_context.window.draw(m_renderSurface);
     m_context.window.draw(hud);
     if (m_context.params.bindings.isActive("minimap"))

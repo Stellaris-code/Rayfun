@@ -1,6 +1,7 @@
 #version 330
 
 #extension GL_ARB_texture_rectangle : enable
+#extension GL_ARB_shader_image_load_store : require
 
 #define MAX_RAY_STEPS 128
 
@@ -12,9 +13,9 @@
 uniform vec2 u_resolution;
 uniform vec2 u_pos = vec2(7.5, 7.5);
 uniform vec2 u_dir = vec2(0, 1);
+
 uniform ivec2 u_mapSize;
-uniform int u_shit;
-uniform samplerBuffer u_map;
+uniform usamplerBuffer u_map;
 uniform sampler2DArray u_textures;
 
 struct Tile
@@ -93,7 +94,7 @@ RaycastResult raycast(vec2 t_begin, vec2 t_dir)
         mask.x = sideDist.x < sideDist.y;
         mask.y = !mask.x;
 
-        side = int(mask.x) * int(rayDir.x > 0) + int(mask.y) * (int(rayDir.y > 0) + 2);
+        side = int(mask.x) * int(rayDir.x < 0) + int(mask.y) * (int(rayDir.y < 0) + 2);
 
         sideDist += vec2(mask) * deltaDist;
         mapPos += ivec2(mask) * rayStep;
@@ -150,22 +151,22 @@ void floorCasting(int j, vec2 pos, RaycastResult result, float wallX, float draw
         floorWall += result.mapPos + toAdd;
     }
 
-    if (result.side == SIDE_SOUTH)
+    if (result.side == SIDE_NORTH)
     {
         floorWall.x = result.mapPos.x;
         floorWall.y = result.mapPos.y + (1 - wallX);
     }
-    else if (result.side == SIDE_NORTH)
+    else if (result.side == SIDE_SOUTH)
     {
         floorWall.x = result.mapPos.x + 1;
         floorWall.y = result.mapPos.y + (1 - wallX);
     }
-    else if (result.side == SIDE_WEST)
+    else if (result.side == SIDE_EAST)
     {
         floorWall.x = result.mapPos.x + (1 - wallX);
         floorWall.y = result.mapPos.y;
     }
-    else if (result.side == SIDE_EAST)
+    else if (result.side == SIDE_WEST)
     {
         floorWall.x = result.mapPos.x + (1 - wallX);
         floorWall.y = result.mapPos.y + 1;
@@ -195,7 +196,7 @@ void floorCasting(int j, vec2 pos, RaycastResult result, float wallX, float draw
 
 void main()
 {
-/*    gl_FragColor.a = 1;
+    gl_FragColor.a = 1;
 
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
     
@@ -244,6 +245,7 @@ void main()
         const float brightness = 0.8;
 
         float texY = (j - drawStart) / (drawEnd - drawStart);
+        texY = 1 - texY;
         vec4 color;
 
         vec2 coords = vec2(texX, texY);
@@ -289,23 +291,4 @@ void main()
     {
         floorCasting(int(j), rayPos, result, wallX, drawEnd);
     }
-
-    if (result.side == SIDE_SOUTH)
-    {
-        
-        //gl_FragColor = mix(gl_FragColor, vec4(0.75), 0.5);
-    }
-*/
-    gl_FragColor = texture(u_textures, vec3(gl_FragCoord.xy / u_resolution.xy, 1));
-
-    if (textureSize(u_textures, 0).z == 0)
-    {
-        gl_FragColor = vec4(1);
-    }
-
-    if (u_shit == 3)
-    {
-     //   gl_FragColor = vec4(0, 0, 1, 1);
-    }
-
 }

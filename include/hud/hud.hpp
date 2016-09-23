@@ -28,6 +28,7 @@
 #include <SFML/System/Time.hpp>
 
 #include "common.hpp"
+#include "hud/textcursor.hpp"
 
 namespace Rayfun
 {
@@ -67,15 +68,17 @@ class HUD : public sf::Drawable, public sf::Transformable
 
     private:
         void updatePos();
-        void updateBob(double t_amount);
+        void updateBob();
 
     private:
         Weapon* m_weapon { nullptr };
         const Resources& m_res;
         sf::Vector2d m_size { 0, 0 };
+        sf::Vector2d m_weaponBasePos { 0, 0 };
         sf::Text m_lifeArmor;
         sf::Text m_ammoList;
         double m_runningTime { 0 };
+        double m_lastMoveSpeed { 0 };
 };
 
 }

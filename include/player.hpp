@@ -65,6 +65,7 @@ class Player : public Actor
     private:
         mutable std::map<std::string, unsigned long> m_ammo;
         sf::Vector2d m_deltaPos;
+        bool m_moved { true };
 
     private:
 };
